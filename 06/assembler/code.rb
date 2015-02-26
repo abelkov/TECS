@@ -1,6 +1,6 @@
 module Code
-  dest_map = {
-    'null'=> '000',
+  @dest_map = {
+    nil   => '000',
     'M'   => '001',
     'D'   => '010',
     'MD'  => '011',
@@ -10,8 +10,8 @@ module Code
     'AMD' => '111'
   }
 
-  jump_map = {
-    'null'=> '000',
+  @jump_map = {
+    nil   => '000',
     'JGT' => '001',
     'JEQ' => '010',
     'JGE' => '011',
@@ -21,7 +21,7 @@ module Code
     'JMP' => '111'
   }
 
-  comp_map = {
+  @comp_map = {
     # a bit is 0
     '0'  => '0101010',
     '1'  => '0111111',
@@ -55,15 +55,15 @@ module Code
     'D|M'=> '1010101'
   }
 
-  def dest(mnemonic)
-    dest_map[mnemonic]
+  def self.dest(mnemonic)
+    @dest_map[mnemonic]
   end
 
-  def jump(mnemonic)
-    jump_map[mnemonic]
+  def self.jump(mnemonic)
+    @jump_map[mnemonic]
   end
 
-  def comp(mnemonic)
-    comp_map[mnemonic]
+  def self.comp(mnemonic)
+    @comp_map[mnemonic]
   end
 end
