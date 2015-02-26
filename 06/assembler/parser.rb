@@ -21,12 +21,21 @@ class Parser
 
   def parse_line(line)
     at_match = line.match('\s*@(.*)\s*')
+    dest_match = line.match('\s*(.*)=(.*)\s*')
+    jump_match = line.match('\s*(.*);(.*)\s*')
     if at_match
       @command = :a
-      @symbol = at_match[1]
-    else
+      @symbol = at_match[1].strip
+    elsif dest_match
       @command = :c
-      @symbol = nil
+      @dest = dest_match[1].strip
+      @comp = dest_match[2].strip
+      @jump = nil
+    elsif jump_match
+      @command = :c
+      @dest = nil
+      @comp = jump_match[1].strip
+      @jump = jump_match[2].strip
     end
   end
 end
