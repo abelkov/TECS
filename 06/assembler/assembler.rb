@@ -34,11 +34,11 @@ symbol_map = {
   'KBD'    => 24576
 }
 
-# 1st pass: update the symbol map with labels and variables
-SymbolParser.new(ARGV[0], symbol_map).parse
+# 1st pass: update the symbol map with labels
+LabelParser.new(ARGV[0], symbol_map).parse
 
 # 2nd pass: turn assembly into machine code
-parser = Parser.new(ARGV[0], symbol_map)
+parser = ProgramParser.new(ARGV[0], symbol_map)
 filename, _file_extension = ARGV[0].split('.')
 File.open("#{ filename }.hack", 'w') do |f|
   parser.parse do |p|
