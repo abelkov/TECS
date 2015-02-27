@@ -1,6 +1,14 @@
 module Pattern
   def self.at
-    /^\s*@(.*)\s*$/
+    /^\s*@(.+)\s*$/
+  end
+
+  def self.at_number
+    /^\s*@(\d+)\s*$/
+  end
+
+  def self.at_symbol
+    /^\s*@(\D+)\s*$/
   end
 
   def self.dest
