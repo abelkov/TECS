@@ -17,6 +17,9 @@ class Parser
   def skip?(line)
     line.start_with?('//') || line =~ /^\s*$/
   end
+
+  def parse_line(line)
+  end
 end
 
 
