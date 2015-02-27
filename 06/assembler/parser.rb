@@ -1,3 +1,5 @@
+require_relative 'pattern.rb'
+
 class Parser
   def initialize(filename, symbol_map)
     @filename = filename
@@ -15,7 +17,7 @@ class Parser
   private
 
   def skip?(line)
-    line.start_with?('//') || line =~ /^\s*$/
+    line.start_with?('//') || line =~ Pattern.empty
   end
 
   def parse_line(line)
@@ -33,10 +35,14 @@ class ProgramParser < Parser
 
   private
 
+  def skip?(line)
+    super || line =~ Pattern.label
+  end
+
   def parse_line(line)
-    at_match = line.match('\s*@(.*)\s*')
-    dest_match = line.match('\s*(.*)=(.*)\s*')
-    jump_match = line.match('\s*(.*);(.*)\s*')
+    at_match = line.match(Pattern.at)
+    dest_match = line.match(Pattern.dest)
+    jump_match = line.match(Pattern.jump)
     if at_match
       @command = :a
       @symbol = at_match[1].strip
@@ -64,7 +70,7 @@ class LabelParser < Parser
   private
 
   def parse_line(line)
-    label_match = line.match('\((.*)\)')
+    label_match = line.match(Pattern.label)
     if label_match
       symbol_map[label_match[1]] = @next_addr
     else
