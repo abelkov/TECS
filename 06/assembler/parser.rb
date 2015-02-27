@@ -26,7 +26,7 @@ end
 
 
 class ProgramParser < Parser
-  attr_reader :comp, :dest, :jump, :command, :symbol
+  attr_reader :comp, :dest, :jump, :command, :address
 
   def initialize(filename, symbol_map)
     super
@@ -40,23 +40,33 @@ class ProgramParser < Parser
   end
 
   def parse_line(line)
-    at_match = line.match(Pattern.at)
-    dest_match = line.match(Pattern.dest)
-    jump_match = line.match(Pattern.jump)
-    if at_match
-      @command = :a
-      @symbol = at_match[1].strip
-    elsif dest_match
-      @command = :c
-      @dest = dest_match[1].strip
-      @comp = dest_match[2].strip
-      @jump = nil
-    elsif jump_match
-      @command = :c
-      @dest = nil
-      @comp = jump_match[1].strip
-      @jump = jump_match[2].strip
+    case line
+    when Pattern.at then parse_at(line)
+    when Pattern.dest then parse_dest(line)
+    when Pattern.jump then parse_jump(line)
     end
+  end
+
+  def parse_at(line)
+    address = line.match(Pattern.at)[1]
+    @command = :a
+    @address = address.strip.to_i
+  end
+
+  def parse_dest(line)
+    dest_match = line.match(Pattern.dest)
+    @command = :c
+    @dest = dest_match[1].strip
+    @comp = dest_match[2].strip
+    @jump = nil
+  end
+
+  def parse_jump(line)
+    jump_match = line.match(Pattern.jump)
+    @command = :c
+    @dest = nil
+    @comp = jump_match[1].strip
+    @jump = jump_match[2].strip
   end
 end
 
