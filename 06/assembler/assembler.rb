@@ -43,12 +43,12 @@ filename, _file_extension = ARGV[0].split('.')
 File.open("#{ filename }.hack", 'w') do |f|
   parser.parse do |p|
     if p.command == :a
-      f.puts p.symbol.to_i.to_bin
+      f.puts(p.symbol.to_i.to_bin)
     else
       c = Code.comp(p.comp)
       d = Code.dest(p.dest)
       j = Code.jump(p.jump)
-      f.puts "111#{ c }#{ d }#{ j }"
+      f.puts("111#{ c }#{ d }#{ j }")
     end
   end
 end
