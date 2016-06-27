@@ -12,7 +12,7 @@
 //    }
 //
 //    protected void parseLine(String line) {
-//        Matcher m = Pattern.compile(AsmPattern.label).matcher(line);
+//        Matcher m = Pattern.compile(AsmPattern.LABEL).matcher(line);
 //        if (m.matches()) {
 //            table.addEntry(m.group(1), nextRomAddress);
 //        } else {

@@ -2,9 +2,12 @@ package tecs.assembler;
 
 import java.io.BufferedWriter;
 import java.io.IOException;
-import java.nio.file.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
-import static tecs.assembler.Command.*;
+import static tecs.assembler.Command.A_COMMAND;
+import static tecs.assembler.Command.C_COMMAND;
 
 public class Assembler {
 	public static void main(String[] args) throws IOException {
@@ -27,17 +30,23 @@ public class Assembler {
 			while (parser.hasMoreCommands()) {
 				parser.advance();
 				if (parser.commandType() == C_COMMAND) {
-					String c = codeTable.comp(parser.comp());
-					String d = codeTable.dest(parser.dest());
-					String j = codeTable.jump(parser.jump());
+					String c = codeTable.comp(parser.getComp());
+					String d = codeTable.dest(parser.getDest());
+					String j = codeTable.jump(parser.getJump());
 					bw.write("111" + c + d + j);
 					bw.newLine();
 				} else if (parser.commandType() == A_COMMAND) {
-					String address = parser.symbol();
-					bw.write(address);
+					String symbol = parser.getSymbol();
+					int address = Integer.parseInt(symbol);
+					String binaryAddress = toBinary(address);
+					bw.write(binaryAddress);
 					bw.newLine();
 				}
 			}
 		}
+	}
+
+	private static String toBinary(int address) {
+		return String.format("%16s", Integer.toBinaryString(address)).replace(' ', '0');
 	}
 }

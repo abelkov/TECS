@@ -3,78 +3,101 @@ package tecs.assembler;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Scanner;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static tecs.assembler.AsmPattern.*;
 import static tecs.assembler.Command.*;
 
 class Parser {
-    Scanner input;
-    private String currentLine;
-    private Command currentCommand;
+	Scanner input;
 
-    Parser(Path filePath) throws IOException {
-        this.input = new Scanner(filePath);
+	private String currentLine;
+	private Command currentCommand;
 
-    }
+	private String dest;
+	private String comp;
+	private String jump;
+	private String symbol;
 
-//    void parse() throws IOException {
-//        try (BufferedReader br = Files.newBufferedReader(filePath)) {
-//            for (String line; (line = br.readLine()) != null; ) {
-//                if (skipLine(line)) {
-//                    continue;
-//                }
-//                parseLine(line);
-//            }
-//        }
-//
-//    }
+	Parser(Path filePath) throws IOException {
+		this.input = new Scanner(filePath);
+	}
 
-    boolean hasMoreCommands() {
-        if (!input.hasNextLine()) {
-            input.close();
-            return false;
-        }
-        return true;
-    }
+	public String getSymbol() {
+		return symbol;
+	}
 
-    void advance() {
-        currentLine = input.nextLine();
-        if (Pattern.matches(AsmPattern.at, currentLine)) {
-            parseAt();
-        } else if (Pattern.matches(AsmPattern.dest, currentLine)) {
-            parseDest();
-        } else if (Pattern.matches(AsmPattern.jump, currentLine)) {
-            parseJump();
-        } else if (Pattern.matches(AsmPattern.label, currentLine)) {
-            parseLabel();
-        }
-    }
+	public String getDest() {
+		return dest;
+	}
 
-    Command commandType() {
-        return currentCommand;
-    }
+	public String getComp() {
+		return comp;
+	}
 
-    private void parseAt() {
-        currentCommand = A_COMMAND;
-    }
+	public String getJump() {
+		return jump;
+	}
 
-    private void parseDest() {
-        currentCommand = C_COMMAND;
-    }
+	boolean hasMoreCommands() {
+		if (input.hasNextLine()) {
+			return true;
+		}
+		input.close();
+		return false;
+	}
 
-    private void parseJump() {
-        currentCommand = C_COMMAND;
-    }
+	void advance() {
+		currentLine = input.nextLine();
+		if (Pattern.matches(AT, currentLine)) {
+			currentCommand = A_COMMAND;
+			parseAt();
+		} else if (Pattern.matches(DEST, currentLine)) {
+			currentCommand = C_COMMAND;
+			parseDest();
+		} else if (Pattern.matches(JUMP, currentLine)) {
+			currentCommand = C_COMMAND;
+			parseJump();
+		} else if (Pattern.matches(LABEL, currentLine)) {
+			parseLabel();
+		} else {
+			currentCommand = null;
+		}
+	}
 
-    private void parseLabel() {
-        currentCommand = L_COMMAND;
-    }
+	Command commandType() {
+		return currentCommand;
+	}
 
-    private boolean skipLine(String line) {
-        return line.startsWith("//") || Pattern.matches(AsmPattern.empty, line);
-    }
+	private void parseAt() {
+		Matcher m = Pattern.compile(AT_NUMBER).matcher(currentLine);
+		if (m.matches()) {
+			symbol = m.group(1);
+		}
+	}
 
-//    protected void parseLine(String line) {
-//
-//    }
+	private void parseDest() {
+		Matcher m = Pattern.compile(DEST).matcher(currentLine);
+		m.matches();
+		dest = m.group(1).trim();
+		comp = m.group(2).trim();
+		jump = null;
+	}
+
+	private void parseJump() {
+		Matcher m = Pattern.compile(JUMP).matcher(currentLine);
+		m.matches();
+		dest = null;
+		comp = m.group(1).trim();
+		jump = m.group(2).trim();
+	}
+
+	private void parseLabel() {
+		currentCommand = L_COMMAND;
+	}
+
+//	private boolean skipLine(String line) {
+//		return line.startsWith("//") || Pattern.matches(EMPTY, line);
+//	}
 }
