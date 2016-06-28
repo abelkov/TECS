@@ -10,11 +10,9 @@ import static tecs.assembler.AsmPattern.*;
 import static tecs.assembler.Command.*;
 
 class Parser {
-	Scanner input;
-
+	private Scanner input;
 	private String currentLine;
 	private Command currentCommand;
-
 	private String dest;
 	private String comp;
 	private String jump;
@@ -24,19 +22,23 @@ class Parser {
 		this.input = new Scanner(filePath);
 	}
 
-	public String getSymbol() {
+	Command commandType() {
+		return currentCommand;
+	}
+
+	String getSymbol() {
 		return symbol;
 	}
 
-	public String getDest() {
+	String getDest() {
 		return dest;
 	}
 
-	public String getComp() {
+	String getComp() {
 		return comp;
 	}
 
-	public String getJump() {
+	String getJump() {
 		return jump;
 	}
 
@@ -60,28 +62,24 @@ class Parser {
 			currentCommand = C_COMMAND;
 			parseJump();
 		} else if (Pattern.matches(LABEL, currentLine)) {
+			currentCommand = L_COMMAND;
 			parseLabel();
 		} else {
 			currentCommand = null;
 		}
 	}
 
-	Command commandType() {
-		return currentCommand;
-	}
-
 	private void parseAt() {
-		Matcher m = Pattern.compile(AT_NUMBER).matcher(currentLine);
-		if (m.matches()) {
-			symbol = m.group(1);
-		}
+		Matcher m = Pattern.compile(AT).matcher(currentLine);
+		m.matches();
+		symbol = m.group(1);
 	}
 
 	private void parseDest() {
 		Matcher m = Pattern.compile(DEST).matcher(currentLine);
 		m.matches();
-		dest = m.group(1).trim();
-		comp = m.group(2).trim();
+		dest = m.group(1);
+		comp = m.group(2);
 		jump = null;
 	}
 
@@ -89,15 +87,13 @@ class Parser {
 		Matcher m = Pattern.compile(JUMP).matcher(currentLine);
 		m.matches();
 		dest = null;
-		comp = m.group(1).trim();
-		jump = m.group(2).trim();
+		comp = m.group(1);
+		jump = m.group(2);
 	}
 
 	private void parseLabel() {
-		currentCommand = L_COMMAND;
+		Matcher m = Pattern.compile(LABEL).matcher(currentLine);
+		m.matches();
+		symbol = m.group(1);
 	}
-
-//	private boolean skipLine(String line) {
-//		return line.startsWith("//") || Pattern.matches(EMPTY, line);
-//	}
 }

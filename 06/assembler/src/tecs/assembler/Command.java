@@ -1,5 +1,5 @@
 package tecs.assembler;
 
-public enum Command {
+enum Command {
 	A_COMMAND, C_COMMAND, L_COMMAND
 }

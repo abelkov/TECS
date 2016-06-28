@@ -2,7 +2,7 @@ package tecs.assembler;
 
 import java.util.HashMap;
 
-public class Code {
+class Code {
 	private HashMap<String, String> destTable = new HashMap<>();
 	private HashMap<String, String> jumpTable = new HashMap<>();
 	private HashMap<String, String> compTable = new HashMap<>();
