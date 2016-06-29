@@ -2,16 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="aa4121c2-3c16-45e2-8540-b96ba9710aef" name="Default" comment="Assembler done">
+      <change type="DELETED" beforePath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/AsmPattern.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/Assembler.class" afterPath="" />
       <change type="DELETED" beforePath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/LabelParser.class" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/AsmPattern.class" afterPath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/AsmPattern.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/Assembler.class" afterPath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/Assembler.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/Parser.class" afterPath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/Parser.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/SymbolTable.class" afterPath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/SymbolTable.class" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/dictionaries/alexey.xml" afterPath="$PROJECT_DIR$/.idea/dictionaries/alexey.xml" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/Parser.class" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/SymbolTable.class" afterPath="" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/06/assembler/src/tecs/assembler/AsmPattern.java" afterPath="$PROJECT_DIR$/06/assembler/src/tecs/assembler/AsmPattern.java" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/06/assembler/src/tecs/assembler/Parser.java" afterPath="$PROJECT_DIR$/06/assembler/src/tecs/assembler/Parser.java" />
     </list>
     <ignored path="TECS.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -36,8 +32,8 @@
       <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/.gitignore">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="17">
+              <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -779,8 +775,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+        <state relative-caret-position="17">
+          <caret line="1" column="0" selection-start-line="1" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
           <folding />
         </state>
       </provider>
