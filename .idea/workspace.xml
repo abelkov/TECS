@@ -1,12 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="aa4121c2-3c16-45e2-8540-b96ba9710aef" name="Default" comment="Assembler done">
-      <change type="DELETED" beforePath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/AsmPattern.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/Assembler.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/LabelParser.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/Parser.class" afterPath="" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/06/assembler/output/tecs/assembler/SymbolTable.class" afterPath="" />
+    <list default="true" id="aa4121c2-3c16-45e2-8540-b96ba9710aef" name="Default" comment="Fix bug with full C-instruction syntax">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/06/full-comp-test/Test.asm" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/06/full-comp-test/Test.hack" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
     </list>
     <ignored path="TECS.iws" />
@@ -179,6 +176,42 @@
             </PATH_ELEMENT>
             <PATH_ELEMENT>
               <option name="myItemId" value="06" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="TECS" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="TECS" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="06" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="full-comp-test" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="TECS" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="TECS" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="06" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="assembler" />
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
             </PATH_ELEMENT>
           </PATH>
@@ -419,7 +452,8 @@
   <component name="VcsManagerConfiguration">
     <MESSAGE value="symbolless assembler" />
     <MESSAGE value="Assembler done" />
-    <option name="LAST_COMMIT_MESSAGE" value="Assembler done" />
+    <MESSAGE value="Fix bug with full C-instruction syntax" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix bug with full C-instruction syntax" />
     <option name="OPTIMIZE_IMPORTS_BEFORE_PROJECT_COMMIT" value="true" />
   </component>
   <component name="XDebuggerManager">
