@@ -55,12 +55,9 @@ class Parser {
 		if (Pattern.matches(AT, currentLine)) {
 			currentCommand = A_COMMAND;
 			parseAt();
-		} else if (Pattern.matches(DEST, currentLine)) {
+		} else if (Pattern.matches(COMP, currentLine)) {
 			currentCommand = C_COMMAND;
-			parseDest();
-		} else if (Pattern.matches(JUMP, currentLine)) {
-			currentCommand = C_COMMAND;
-			parseJump();
+			parseComp();
 		} else if (Pattern.matches(LABEL, currentLine)) {
 			currentCommand = L_COMMAND;
 			parseLabel();
@@ -75,20 +72,12 @@ class Parser {
 		symbol = m.group(1);
 	}
 
-	private void parseDest() {
-		Matcher m = Pattern.compile(DEST).matcher(currentLine);
+	private void parseComp() {
+		Matcher m = Pattern.compile(COMP).matcher(currentLine);
 		m.matches();
 		dest = m.group(1);
 		comp = m.group(2);
-		jump = null;
-	}
-
-	private void parseJump() {
-		Matcher m = Pattern.compile(JUMP).matcher(currentLine);
-		m.matches();
-		dest = null;
-		comp = m.group(1);
-		jump = m.group(2);
+		jump = m.group(3);
 	}
 
 	private void parseLabel() {
