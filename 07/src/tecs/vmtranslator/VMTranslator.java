@@ -1,10 +1,11 @@
 package tecs.vmtranslator;
 
+import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 public class VMTranslator {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		// assume a file path for now
 		Path sourcePath = Paths.get(args[0]);
 
@@ -13,7 +14,7 @@ public class VMTranslator {
 
 		// out.asm
 		Path asmFilePath = parentDirectory.resolve(asmFileName);
-
+		Parser p = new Parser(sourcePath);
 
 	}
 }
