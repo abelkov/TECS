@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import static tecs.vmtranslator.Command.C_ARITHMETIC;
+import static tecs.vmtranslator.Command.C_PUSH;
+
 public class VMTranslator {
 	public static void main(String[] args) throws IOException {
 		// assume a file path for now
@@ -14,7 +17,16 @@ public class VMTranslator {
 
 		// out.asm
 		Path asmFilePath = parentDirectory.resolve(asmFileName);
-		Parser p = new Parser(sourcePath);
 
+		Parser p = new Parser(sourcePath);
+		CodeWriter c = new CodeWriter(asmFilePath);
+		while (p.hasMoreCommands()) {
+			p.advance();
+			if (p.commandType() == C_ARITHMETIC) {
+				c.writeArithmetic(p.getArg1());
+			} else if (p.commandType() == C_PUSH) {
+				c.writePushPop(C_PUSH, p.getArg1(), p.getArg2());
+			}
+		}
 	}
 }
