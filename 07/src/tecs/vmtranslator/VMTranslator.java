@@ -14,6 +14,6 @@ public class VMTranslator {
 		// out.asm
 		Path asmFilePath = parentDirectory.resolve(asmFileName);
 
-		
+
 	}
 }
