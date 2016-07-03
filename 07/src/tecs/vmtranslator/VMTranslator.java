@@ -4,8 +4,7 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import static tecs.vmtranslator.Command.C_ARITHMETIC;
-import static tecs.vmtranslator.Command.C_PUSH;
+import static tecs.vmtranslator.Command.*;
 
 public class VMTranslator {
 	public static void main(String[] args) throws IOException {
@@ -26,6 +25,8 @@ public class VMTranslator {
 				c.writeArithmetic(p.getArg1());
 			} else if (p.commandType() == C_PUSH) {
 				c.writePushPop(C_PUSH, p.getArg1(), p.getArg2());
+			} else if (p.commandType() == C_POP) {
+				c.writePushPop(C_POP, p.getArg1(), p.getArg2());
 			}
 		}
 		c.close();
