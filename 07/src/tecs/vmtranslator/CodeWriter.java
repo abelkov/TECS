@@ -10,6 +10,7 @@ import static tecs.vmtranslator.Command.C_PUSH;
 class CodeWriter {
 	private BufferedWriter bw;
 	private String n = System.getProperty("line.separator");
+	private int booleanLabelCount = 0;
 
 	CodeWriter(Path outputPath) throws IOException {
 		setFilePath(outputPath);
@@ -79,6 +80,8 @@ class CodeWriter {
 	}
 
 	private void writeBoolean(String command) throws IOException {
+		String trueLabel = "BOOLEANTRUE" + booleanLabelCount;
+		String endLabel = "BOOLEANEND" + booleanLabelCount;
 		String code =
 				"@SP" + n +
 				"M=M-1" + n +
@@ -86,21 +89,22 @@ class CodeWriter {
 				"D=M" + n +
 				"A=A+1" + n +
 				"D=D-M" + n + // arg1 - arg2
-				"@BOOLEANTRUE" + n +
+				"@" + trueLabel + n +
 				"D;J" + command + n +
 				"@SP" + n +
 				"A=M" + n +
 				"M=0" + n + // false
-				"@BOOLEANEND" + n +
+				"@" + endLabel + n +
 				"0;JMP" + n +
-				"(BOOLEANTRUE)" + n +
+				"(" + trueLabel + ")" + n +
 				"@SP" + n +
 				"A=M" + n +
 				"M=-1" + n + // true
-				"(BOOLEANEND)" + n +
+				"(" + endLabel + ")" + n +
 				"@SP" + n +
 				"M=M+1" + n;
 		bw.write(code);
+		booleanLabelCount += 1;
 	}
 
 	void writePushPop(Command command, String segment, int index) throws IOException {
