@@ -28,5 +28,6 @@ public class VMTranslator {
 				c.writePushPop(C_PUSH, p.getArg1(), p.getArg2());
 			}
 		}
+		c.close();
 	}
 }

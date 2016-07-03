@@ -42,31 +42,31 @@ class Parser {
 
 	void advance() {
 		currentLine = input.nextLine();
-		if (Pattern.matches(currentLine, ARITHMETIC)) {
+		if (Pattern.matches(ARITHMETIC, currentLine)) {
 			currentCommand = C_ARITHMETIC;
 			parseArithmetic();
-		} else if (Pattern.matches(currentLine, PUSH)) {
+		} else if (Pattern.matches(PUSH, currentLine)) {
 			currentCommand = C_PUSH;
 			parsePush();
-		} else if (Pattern.matches(currentLine, POP)) {
+		} else if (Pattern.matches(POP, currentLine)) {
 			currentCommand = C_POP;
 			parsePop();
-		} else if (Pattern.matches(currentLine, LABEL)) {
+		} else if (Pattern.matches(LABEL, currentLine)) {
 			currentCommand = C_LABEL;
 			parseLabel();
-		} else if (Pattern.matches(currentLine, GOTO)) {
+		} else if (Pattern.matches(GOTO, currentLine)) {
 			currentCommand = C_GOTO;
 			parseGoto();
-		} else if (Pattern.matches(currentLine, IF)) {
+		} else if (Pattern.matches(IF, currentLine)) {
 			currentCommand = C_IF;
 			parseIf();
-		} else if (Pattern.matches(currentLine, FUNCTION)) {
+		} else if (Pattern.matches(FUNCTION, currentLine)) {
 			currentCommand = C_FUNCTION;
 			parseFunction();
-		} else if (Pattern.matches(currentLine, CALL)) {
+		} else if (Pattern.matches(CALL, currentLine)) {
 			currentCommand = C_CALL;
 			parseCall();
-		} else if (Pattern.matches(currentLine, RETURN)) {
+		} else if (Pattern.matches(RETURN, currentLine)) {
 			currentCommand = C_RETURN;
 		} else {
 			currentCommand = null;
@@ -74,52 +74,52 @@ class Parser {
 	}
 
 	private void parseArithmetic() {
-		Matcher m = Pattern.compile(currentLine).matcher(ARITHMETIC);
+		Matcher m = Pattern.compile(ARITHMETIC).matcher(currentLine);
 		m.matches();
 		arg1 = m.group(1);
 	}
 
 	private void parsePush() {
-		Matcher m = Pattern.compile(currentLine).matcher(PUSH);
+		Matcher m = Pattern.compile(PUSH).matcher(currentLine);
 		m.matches();
 		arg1 = m.group(1);
 		arg2 = Integer.parseInt(m.group(2));
 	}
 
 	private void parsePop() {
-		Matcher m = Pattern.compile(currentLine).matcher(POP);
+		Matcher m = Pattern.compile(POP).matcher(currentLine);
 		m.matches();
 		arg1 = m.group(1);
 		arg2 = Integer.parseInt(m.group(2));
 	}
 
 	private void parseLabel() {
-		Matcher m = Pattern.compile(currentLine).matcher(LABEL);
+		Matcher m = Pattern.compile(LABEL).matcher(currentLine);
 		m.matches();
 		arg1 = m.group(1);
 	}
 
 	private void parseGoto() {
-		Matcher m = Pattern.compile(currentLine).matcher(GOTO);
+		Matcher m = Pattern.compile(GOTO).matcher(currentLine);
 		m.matches();
 		arg1 = m.group(1);
 	}
 
 	private void parseIf() {
-		Matcher m = Pattern.compile(currentLine).matcher(IF);
+		Matcher m = Pattern.compile(IF).matcher(currentLine);
 		m.matches();
 		arg1 = m.group(1);
 	}
 
 	private void parseFunction() {
-		Matcher m = Pattern.compile(currentLine).matcher(FUNCTION);
+		Matcher m = Pattern.compile(FUNCTION).matcher(currentLine);
 		m.matches();
 		arg1 = m.group(1);
 		arg2 = Integer.parseInt(m.group(2));
 	}
 
 	private void parseCall() {
-		Matcher m = Pattern.compile(currentLine).matcher(POP);
+		Matcher m = Pattern.compile(POP).matcher(currentLine);
 		m.matches();
 		arg1 = m.group(1);
 		arg2 = Integer.parseInt(m.group(2));
