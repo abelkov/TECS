@@ -15,7 +15,7 @@
       </COVERAGE_PATTERN>
     </EXTENSION>
     <RUBY_RUN_CONFIG NAME="SCRIPT_PATH" VALUE="$MODULE_DIR$/07/VMTranslator/translator.rb" />
-    <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="$MODULE_DIR$/07/StackArithmetic/SimpleAdd/SimpleAdd.vm" />
+    <RUBY_RUN_CONFIG NAME="SCRIPT_ARGS" VALUE="$MODULE_DIR$/07/StackArithmetic/StackTest/StackTest.vm" />
     <method />
   </configuration>
 </component>
