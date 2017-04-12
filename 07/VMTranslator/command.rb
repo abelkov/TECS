@@ -1,10 +1,12 @@
 module VmTranslator
+  autoload :Segment, './segment'
+
   module Command
     def self.create(line)
       if line.match?(/^push/)
         Push.new(line)
-        # elsif line.match?(/^pop/)
-        #   Pop.new(line)
+      elsif line.match?(/^pop/)
+        Pop.new(line)
       elsif line.match?(/^add/)
         Add.new(line)
       elsif line.match?(/^sub/)
@@ -29,7 +31,7 @@ module VmTranslator
     end
 
     def initialize(line)
-      @commented_line = "\n// " + line
+      @commented_line = "\n///// " + line
       parse_line(line)
     end
 
@@ -39,7 +41,9 @@ module VmTranslator
 
     private
 
-    def parse_line(line) end
+    def parse_line(line)
+    end
+
   end
 
   class Push
@@ -47,21 +51,54 @@ module VmTranslator
 
     def parse_line(line)
       parts = line.split(/\s/)
-      @segment = parts[1]
       @index = parts[2]
+      @segment = Segment.create(parts[1], @index)
     end
 
     def asm
       <<~ASM
-        @#{@index}
-        D=A
-        @SP
-        A=M
-        M=D
+        #{@segment.get_value_asm}
+        // push value to stack
         @SP
         M=M+1
+        A=M-1
+        M=D
       ASM
     end
+  end
+
+  class Pop
+    include Command
+    @@count = 0
+
+    def parse_line(line)
+      parts = line.split(/\s/)
+      @index = parts[2]
+      @segment = Segment.create(parts[1], @index)
+    end
+
+    def asm
+      @@count += 1
+      <<~ASM
+        // save stack value and decrement SP
+        @SP
+        AM=M-1
+        D=M
+        @push-value-#{@@count}
+        M=D
+        // save segment cell address
+        #{@segment.get_cell_address_asm}
+        @push-cell-address-#{@@count}
+        M=D
+        // pop stack value to segment
+        @push-value-#{@@count}
+        D=M
+        @push-cell-address-#{@@count}
+        A=M
+        M=D
+      ASM
+    end
+
   end
 
   class Branching
