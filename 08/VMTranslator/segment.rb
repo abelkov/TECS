@@ -7,7 +7,7 @@ module VmTranslator
       'this' => 'THIS',
       'that' => 'THAT',
       'pointer' => 'pointer',
-      'temp' => 'temp',
+      'temp' => 'temp'
 
     }
 
@@ -21,7 +21,7 @@ module VmTranslator
       elsif name == 'static'
         StaticSegment.new(name, index)
       else
-        raise 'unknown segment'
+        raise 'unknown segment: ' + name
       end
     end
 

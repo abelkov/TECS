@@ -25,8 +25,16 @@ module VmTranslator
         Or.new(line)
       elsif line.match?(/^not/)
         Not.new(line)
+
+        # Control flow
+      elsif line.match?(/^label/)
+        Label.new(line)
+      elsif line.match?(/^goto/)
+        Goto.new(line)
+      elsif line.match?(/^if-goto/)
+        IfGoto.new(line)
       else
-        raise 'unknown command'
+        raise 'unknown command: ' + line
       end
     end
 
@@ -41,9 +49,59 @@ module VmTranslator
 
     private
 
-    def parse_line(line)
+    def asm
+      raise 'not implemented'
     end
 
+    def parse_line(line)
+    end
+  end
+
+  module ControlFlow
+    include Command
+
+    def parse_line(line)
+      vm_label = line.split(/\s/)[1]
+      @label = "#{func_name}$#{vm_label}"
+    end
+
+    def func_name
+      'null'
+    end
+  end
+
+  class Label
+    include ControlFlow
+
+    def asm
+      "(#{@label})"
+    end
+  end
+
+  class Goto
+    include ControlFlow
+
+    def asm
+      <<~ASM
+        @#{@label}
+        0;JMP
+      ASM
+    end
+  end
+
+  class IfGoto
+    include ControlFlow
+
+    def asm
+      <<~ASM
+        @SP
+        M=M-1
+        A=M
+        D=M
+        @#{@label}
+        D;JGT
+      ASM
+    end
   end
 
   class Push
