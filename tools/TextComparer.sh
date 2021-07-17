@@ -32,5 +32,5 @@ else
 		arg2="$dir/$2"
 	fi
 #	echo Comparing "$arg1" "$arg2"
-	java -classpath "${CLASSPATH}:bin/classes" TextComparer "$arg1" "$arg2"
+	/home/belkov/.jdks/java11/bin/java -Dsun.java2d.uiScale=2 -classpath "${CLASSPATH}:bin/classes" TextComparer "$arg1" "$arg2"
 fi

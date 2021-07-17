@@ -31,5 +31,5 @@ else
 		fi
 	fi
 	echo Compiling "$arg1"
-	java -classpath "${CLASSPATH}:bin/classes:bin/lib/Hack.jar:bin/lib/Compilers.jar" Hack.Compiler.JackCompiler "$arg1"
+	/home/belkov/.jdks/java11/bin/java -Dsun.java2d.uiScale=2 -classpath "${CLASSPATH}:bin/classes:bin/lib/Hack.jar:bin/lib/Compilers.jar" Hack.Compiler.JackCompiler "$arg1"
 fi

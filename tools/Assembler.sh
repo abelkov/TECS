@@ -17,7 +17,7 @@ then
 elif [ $# -eq 0 ]
 then
 	# Run assembler in interactive mode
-	java -classpath "${CLASSPATH}:bin/classes:bin/lib/Hack.jar:bin/lib/HackGUI.jar:bin/lib/Compilers.jar:bin/lib/AssemblerGUI.jar:bin/lib/TranslatorsGUI.jar" HackAssemblerMain &
+	/home/belkov/.jdks/java11/bin/java -Dsun.java2d.uiScale=2 -classpath "${CLASSPATH}:bin/classes:bin/lib/Hack.jar:bin/lib/HackGUI.jar:bin/lib/Compilers.jar:bin/lib/AssemblerGUI.jar:bin/lib/TranslatorsGUI.jar" HackAssemblerMain &
 else
 	# Convert arg1 to an absolute path and run assembler with arg1.
 	if [ `echo "$1" | sed -e "s/\(.\).*/\1/"` = / ]
@@ -27,6 +27,6 @@ else
 		arg1="${dir}/$1"
 	fi
 	echo Assembling "$arg1"
-	java -classpath "${CLASSPATH}:bin/classes:bin/lib/Hack.jar:bin/lib/HackGUI.jar:bin/lib/Compilers.jar:bin/lib/AssemblerGUI.jar:bin/lib/TranslatorsGUI.jar" HackAssemblerMain "$arg1"
+	/home/belkov/.jdks/java11/bin/java -Dsun.java2d.uiScale=2 -classpath "${CLASSPATH}:bin/classes:bin/lib/Hack.jar:bin/lib/HackGUI.jar:bin/lib/Compilers.jar:bin/lib/AssemblerGUI.jar:bin/lib/TranslatorsGUI.jar" HackAssemblerMain "$arg1"
 fi
 
