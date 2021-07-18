@@ -3,7 +3,7 @@ package tecs.assembler;
 import java.util.HashMap;
 
 class SymbolTable {
-	private HashMap<String, Integer> table = new HashMap<>();
+	private final HashMap<String, Integer> table = new HashMap<>();
 
 	SymbolTable() {
 		String[] symbols = {

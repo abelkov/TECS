@@ -1,7 +1,5 @@
 package tecs.assembler;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -10,7 +8,7 @@ import static tecs.assembler.AsmPattern.*;
 import static tecs.assembler.Command.*;
 
 class Parser {
-	private Scanner input;
+	private final Scanner input;
 	private String currentLine;
 	private Command currentCommand;
 	private String dest;
@@ -18,8 +16,8 @@ class Parser {
 	private String jump;
 	private String symbol;
 
-	Parser(Path filePath) throws IOException {
-		this.input = new Scanner(filePath);
+	Parser(String asm) {
+		this.input = new Scanner(asm);
 	}
 
 	Command commandType() {

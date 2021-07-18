@@ -3,9 +3,9 @@ package tecs.assembler;
 import java.util.HashMap;
 
 class Code {
-	private HashMap<String, String> destTable = new HashMap<>();
-	private HashMap<String, String> jumpTable = new HashMap<>();
-	private HashMap<String, String> compTable = new HashMap<>();
+	private final HashMap<String, String> destTable = new HashMap<>();
+	private final HashMap<String, String> jumpTable = new HashMap<>();
+	private final HashMap<String, String> compTable = new HashMap<>();
 
 	Code() {
 		String[] destMnemonic = {null, "M", "D", "MD", "A", "AM", "AD", "AMD"};
