@@ -1,86 +1,70 @@
-package tecs.assembler;
+package tecs.assembler
 
-import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.*
+import java.util.regex.Pattern
 
-import static tecs.assembler.AsmPattern.*;
-import static tecs.assembler.Command.*;
+internal class Parser(asm: String?) {
+    private val input: Scanner
+    private var currentLine: String? = null
+    private var currentCommand: Command? = null
+    var dest: String? = null
+        private set
+    var comp: String? = null
+        private set
+    var jump: String? = null
+        private set
+    var symbol: String? = null
+        private set
 
-class Parser {
-	private final Scanner input;
-	private String currentLine;
-	private Command currentCommand;
-	private String dest;
-	private String comp;
-	private String jump;
-	private String symbol;
+    fun commandType(): Command? {
+        return currentCommand
+    }
 
-	Parser(String asm) {
-		this.input = new Scanner(asm);
-	}
+    fun hasMoreCommands(): Boolean {
+        if (input.hasNextLine()) {
+            return true
+        }
+        input.close()
+        return false
+    }
 
-	Command commandType() {
-		return currentCommand;
-	}
+    fun advance() {
+        currentLine = input.nextLine()
+        if (Pattern.matches(AsmPattern.AT, currentLine)) {
+            currentCommand = Command.A_COMMAND
+            parseAt()
+        } else if (Pattern.matches(AsmPattern.COMP, currentLine)) {
+            currentCommand = Command.C_COMMAND
+            parseComp()
+        } else if (Pattern.matches(AsmPattern.LABEL, currentLine)) {
+            currentCommand = Command.L_COMMAND
+            parseLabel()
+        } else {
+            currentCommand = null
+        }
+    }
 
-	String getSymbol() {
-		return symbol;
-	}
+    private fun parseAt() {
+        val m = Pattern.compile(AsmPattern.AT).matcher(currentLine)
+        m.matches()
+        symbol = m.group(1)
+    }
 
-	String getDest() {
-		return dest;
-	}
+    private fun parseComp() {
+        val m = Pattern.compile(AsmPattern.COMP).matcher(currentLine)
+        m.matches()
+        dest = m.group(1)
+        comp = m.group(2)
+        jump = m.group(3)
+    }
 
-	String getComp() {
-		return comp;
-	}
+    private fun parseLabel() {
+        val m = Pattern.compile(AsmPattern.LABEL).matcher(currentLine)
+        m.matches()
+        symbol = m.group(1)
+    }
 
-	String getJump() {
-		return jump;
-	}
-
-	boolean hasMoreCommands() {
-		if (input.hasNextLine()) {
-			return true;
-		}
-		input.close();
-		return false;
-	}
-
-	void advance() {
-		currentLine = input.nextLine();
-		if (Pattern.matches(AT, currentLine)) {
-			currentCommand = A_COMMAND;
-			parseAt();
-		} else if (Pattern.matches(COMP, currentLine)) {
-			currentCommand = C_COMMAND;
-			parseComp();
-		} else if (Pattern.matches(LABEL, currentLine)) {
-			currentCommand = L_COMMAND;
-			parseLabel();
-		} else {
-			currentCommand = null;
-		}
-	}
-
-	private void parseAt() {
-		Matcher m = Pattern.compile(AT).matcher(currentLine);
-		m.matches();
-		symbol = m.group(1);
-	}
-
-	private void parseComp() {
-		Matcher m = Pattern.compile(COMP).matcher(currentLine);
-		m.matches();
-		dest = m.group(1);
-		comp = m.group(2);
-		jump = m.group(3);
-	}
-
-	private void parseLabel() {
-		Matcher m = Pattern.compile(LABEL).matcher(currentLine);
-		m.matches();
-		symbol = m.group(1);
-	}
+    init {
+        input = Scanner(asm)
+    }
 }

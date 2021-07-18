@@ -1,74 +1,70 @@
-package tecs.assembler;
+package tecs.assembler
 
-import java.util.regex.Pattern;
+import java.lang.StringBuilder
+import java.util.regex.Pattern
 
-import static tecs.assembler.AsmPattern.NUMBER;
-import static tecs.assembler.Command.*;
-
-public class Assembler {
-    private final SymbolTable symbolTable = new SymbolTable();
-    private final String asm;
-
-    public Assembler(String asm) {
-        this.asm = asm;
+class Assembler(private val asm: String) {
+    private val symbolTable = SymbolTable()
+    fun assemble(): String {
+        firstPass()
+        return secondPass()
     }
 
-    public String assemble() {
-        firstPass();
-        return secondPass();
-    }
-
-    private void firstPass() {
+    private fun firstPass() {
         // update the symbol map with labels
-        int lineNumber = 0;
-        Parser labelParser = new Parser(asm);
+        var lineNumber = 0
+        val labelParser = Parser(asm)
         while (labelParser.hasMoreCommands()) {
-            labelParser.advance();
+            labelParser.advance()
             if (labelParser.commandType() == null) {
-                continue;
-            } else if (labelParser.commandType() == L_COMMAND) {
-                String symbol = labelParser.getSymbol();
-                symbolTable.addEntry(symbol, lineNumber);
+                continue
+            } else if (labelParser.commandType() === Command.L_COMMAND) {
+                val symbol = labelParser.symbol
+                symbolTable.addEntry(symbol!!, lineNumber)
             } else {
-                lineNumber += 1;
+                lineNumber += 1
             }
         }
     }
 
-    private String secondPass() {
+    private fun secondPass(): String {
         // 2nd pass: turn assembly into machine code
-        StringBuilder output = new StringBuilder();
-        Code codeTable = new Code();
-        Parser programParser = new Parser(asm);
-        int nextRAMAddress = 16;
+        val output = StringBuilder()
+        val codeTable = Code()
+        val programParser = Parser(asm)
+        var nextRAMAddress = 16
         while (programParser.hasMoreCommands()) {
-            programParser.advance();
-            if (programParser.commandType() == C_COMMAND) {
-                String c = codeTable.comp(programParser.getComp());
-                String d = codeTable.dest(programParser.getDest());
-                String j = codeTable.jump(programParser.getJump());
-                output.append("111" + c + d + j + "\n");
-            } else if (programParser.commandType() == A_COMMAND) {
-                String symbol = programParser.getSymbol();
-                int address;
-                if (Pattern.matches(NUMBER, symbol)) {
-                    address = Integer.parseInt(symbol);
+            programParser.advance()
+            if (programParser.commandType() === Command.C_COMMAND) {
+                val c = codeTable.comp(programParser.comp!!)
+                val d = codeTable.dest(programParser.dest)
+                val j = codeTable.jump(programParser.jump)
+                output.append("111$c$d$j\n")
+            } else if (programParser.commandType() === Command.A_COMMAND) {
+                val symbol = programParser.symbol
+                var address: Int
+                if (Pattern.matches(AsmPattern.NUMBER, symbol)) {
+                    address = symbol!!.toInt()
                 } else {
-                    if (!symbolTable.contains(symbol)) {
-                        symbolTable.addEntry(symbol, nextRAMAddress);
-                        nextRAMAddress += 1;
+                    if (!symbolTable.contains(symbol!!)) {
+                        symbolTable.addEntry(symbol, nextRAMAddress)
+                        nextRAMAddress += 1
                     }
-                    address = symbolTable.getAddress(symbol);
+                    address = symbolTable.getAddress(symbol)
                 }
-                String binaryAddress = toBinary(address);
-                output.append(binaryAddress + "\n");
+                val binaryAddress = toBinary(address)
+                output.append(
+                    """
+    $binaryAddress
+    
+    """.trimIndent()
+                )
             }
         }
-
-        return output.toString();
+        return output.toString()
     }
 
-    private String toBinary(int address) {
-        return String.format("%16s", Integer.toBinaryString(address)).replace(' ', '0');
+    private fun toBinary(address: Int): String {
+        return String.format("%16s", Integer.toBinaryString(address)).replace(' ', '0')
     }
 }

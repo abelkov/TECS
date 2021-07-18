@@ -1,19 +1,19 @@
-package tecs.assembler;
+package tecs.assembler
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import kotlin.jvm.JvmStatic
+import java.nio.file.Files
+import java.nio.file.Paths
 
-public class AssemblerCLI {
-	public static void main(String[] args) throws IOException {
-		String content = Files.readString(Paths.get(args[0]));
-		var assembler = new Assembler(content);
-		String output = assembler.assemble();
-		Path asmFilePath = Paths.get(args[0]);
-		Path parentDirectory = asmFilePath.getParent();
-		String hackFileName = asmFilePath.getFileName().toString().split("\\.")[0] + ".hack";
-		Path hackFilePath = parentDirectory.resolve(hackFileName);
-		Files.writeString(hackFilePath, output);
-	}
+object AssemblerCLI {
+    @JvmStatic
+    fun main(args: Array<String>) {
+        val content = Files.readString(Paths.get(args[0]))
+        val assembler = Assembler(content)
+        val output = assembler.assemble()
+        val asmFilePath = Paths.get(args[0])
+        val parentDirectory = asmFilePath.parent
+        val hackFileName = asmFilePath.fileName.toString().split("\\.".toRegex()).toTypedArray()[0] + ".hack"
+        val hackFilePath = parentDirectory.resolve(hackFileName)
+        Files.writeString(hackFilePath, output)
+    }
 }
