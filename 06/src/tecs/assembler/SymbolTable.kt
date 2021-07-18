@@ -1,12 +1,31 @@
 package tecs.assembler
 
-import java.util.HashMap
-
-internal class SymbolTable {
-    private val table = HashMap<String, Int>()
-    fun addEntry(symbol: String, address: Int) {
-        table[symbol] = address
-    }
+class SymbolTable {
+    private val table = mutableMapOf(
+        "SP" to 0,
+        "LCL" to 1,
+        "ARG" to 2,
+        "THIS" to 3,
+        "THAT" to 4,
+        "R0" to 0,
+        "R1" to 1,
+        "R2" to 2,
+        "R3" to 3,
+        "R4" to 4,
+        "R5" to 5,
+        "R6" to 6,
+        "R7" to 7,
+        "R8" to 8,
+        "R9" to 9,
+        "R10" to 10,
+        "R11" to 11,
+        "R12" to 12,
+        "R13" to 13,
+        "R14" to 14,
+        "R15" to 15,
+        "SCREEN" to 16384,
+        "KBD" to 24576
+    )
 
     operator fun contains(symbol: String): Boolean {
         return table.containsKey(symbol)
@@ -16,19 +35,7 @@ internal class SymbolTable {
         return table[symbol]!!
     }
 
-    init {
-        val symbols = arrayOf(
-            "SP", "LCL", "ARG", "THIS", "THAT",
-            "R0", "R1", "R2", "R3", "R4", "R5", "R6", "R7", "R8", "R9", "R10",
-            "R11", "R12", "R13", "R14", "R15", "SCREEN", "KBD"
-        )
-        val addresses = intArrayOf(
-            0, 1, 2, 3, 4,
-            0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
-            11, 12, 13, 14, 15, 16384, 24576
-        )
-        for (i in symbols.indices) {
-            table[symbols[i]] = addresses[i]
-        }
+    fun addEntry(symbol: String, address: Int) {
+        table[symbol] = address
     }
 }

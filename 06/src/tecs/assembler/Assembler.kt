@@ -1,70 +1,66 @@
 package tecs.assembler
 
-import java.lang.StringBuilder
-import java.util.regex.Pattern
-
 class Assembler(private val asm: String) {
     private val symbolTable = SymbolTable()
+
     fun assemble(): String {
-        firstPass()
-        return secondPass()
+        declareLabelSymbols()
+        return generateHackCode()
     }
 
-    private fun firstPass() {
-        // update the symbol map with labels
+    private fun declareLabelSymbols() {
         var lineNumber = 0
-        val labelParser = Parser(asm)
-        while (labelParser.hasMoreCommands()) {
-            labelParser.advance()
-            if (labelParser.commandType() == null) {
-                continue
-            } else if (labelParser.commandType() === Command.L_COMMAND) {
-                val symbol = labelParser.symbol
-                symbolTable.addEntry(symbol!!, lineNumber)
-            } else {
-                lineNumber += 1
-            }
-        }
-    }
-
-    private fun secondPass(): String {
-        // 2nd pass: turn assembly into machine code
-        val output = StringBuilder()
-        val codeTable = Code()
-        val programParser = Parser(asm)
-        var nextRAMAddress = 16
-        while (programParser.hasMoreCommands()) {
-            programParser.advance()
-            if (programParser.commandType() === Command.C_COMMAND) {
-                val c = codeTable.comp(programParser.comp!!)
-                val d = codeTable.dest(programParser.dest)
-                val j = codeTable.jump(programParser.jump)
-                output.append("111$c$d$j\n")
-            } else if (programParser.commandType() === Command.A_COMMAND) {
-                val symbol = programParser.symbol
-                var address: Int
-                if (Pattern.matches(AsmPattern.NUMBER, symbol)) {
-                    address = symbol!!.toInt()
-                } else {
-                    if (!symbolTable.contains(symbol!!)) {
-                        symbolTable.addEntry(symbol, nextRAMAddress)
-                        nextRAMAddress += 1
-                    }
-                    address = symbolTable.getAddress(symbol)
+        val parser = Parser(asm)
+        while (parser.hasMoreCommands()) {
+            parser.advance()
+            when (parser.instructionType) {
+                InstructionType.LABEL -> {
+                    symbolTable.addEntry(parser.address, lineNumber)
                 }
-                val binaryAddress = toBinary(address)
-                output.append(
-                    """
-    $binaryAddress
-    
-    """.trimIndent()
-                )
+                InstructionType.ADDRESS, InstructionType.COMPUTE -> {
+                    lineNumber += 1
+                }
             }
         }
-        return output.toString()
     }
 
-    private fun toBinary(address: Int): String {
-        return String.format("%16s", Integer.toBinaryString(address)).replace(' ', '0')
+    private fun generateHackCode(): String {
+        val result = StringBuilder()
+        val parser = Parser(asm)
+        var nextRAMAddress = 16
+        while (parser.hasMoreCommands()) {
+            parser.advance()
+            when (parser.instructionType) {
+                InstructionType.COMPUTE -> {
+                    val compBits = COMP_TABLE[parser.comp]
+                    val destBits = DEST_TABLE[parser.dest]
+                    val jumpBits = JUMP_TABLE[parser.jump]
+                    result.appendLine("111$compBits$destBits$jumpBits")
+                }
+                InstructionType.ADDRESS -> {
+                    val symbolicOrNumericAddress = parser.address
+                    var numericAddress: Int
+                    if (symbolicOrNumericAddress.matches(AsmPattern.NUMBER)) {
+                        numericAddress = symbolicOrNumericAddress.toInt()
+                    } else {
+                        if (!symbolTable.contains(symbolicOrNumericAddress)) {
+                            symbolTable.addEntry(symbolicOrNumericAddress, nextRAMAddress)
+                            nextRAMAddress += 1
+                        }
+                        numericAddress = symbolTable.getAddress(symbolicOrNumericAddress)
+                    }
+                    result.appendLine(numericAddress.toHackBinaryString())
+                }
+                else -> {
+                    // labels are ignored on the second pass
+                }
+            }
+        }
+
+        return result.toString()
+    }
+
+    private fun Int.toHackBinaryString(): String {
+        return String.format("%16s", Integer.toBinaryString(this)).replace(' ', '0')
     }
 }

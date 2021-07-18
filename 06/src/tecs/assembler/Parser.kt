@@ -1,24 +1,20 @@
 package tecs.assembler
 
 import java.util.*
-import java.util.regex.Pattern
 
-internal class Parser(asm: String?) {
-    private val input: Scanner
-    private var currentLine: String? = null
-    private var currentCommand: Command? = null
-    var dest: String? = null
-        private set
-    var comp: String? = null
-        private set
-    var jump: String? = null
-        private set
-    var symbol: String? = null
-        private set
+class Parser(asm: String) {
+    private val input = Scanner(asm)
 
-    fun commandType(): Command? {
-        return currentCommand
-    }
+    var instructionType: InstructionType? = null
+        private set
+    var dest: String = ""
+        private set
+    var comp: String = ""
+        private set
+    var jump: String = ""
+        private set
+    var address: String = ""
+        private set
 
     fun hasMoreCommands(): Boolean {
         if (input.hasNextLine()) {
@@ -29,42 +25,28 @@ internal class Parser(asm: String?) {
     }
 
     fun advance() {
-        currentLine = input.nextLine()
-        if (Pattern.matches(AsmPattern.AT, currentLine)) {
-            currentCommand = Command.A_COMMAND
-            parseAt()
-        } else if (Pattern.matches(AsmPattern.COMP, currentLine)) {
-            currentCommand = Command.C_COMMAND
-            parseComp()
-        } else if (Pattern.matches(AsmPattern.LABEL, currentLine)) {
-            currentCommand = Command.L_COMMAND
-            parseLabel()
-        } else {
-            currentCommand = null
+        val currentLine = input.nextLine()
+        when {
+            currentLine.matches(AsmPattern.AT) -> {
+                instructionType = InstructionType.ADDRESS
+                val matchResult = AsmPattern.AT.find(currentLine)!!
+                address = matchResult.groupValues[1]
+            }
+            currentLine.matches(AsmPattern.COMPUTE) -> {
+                instructionType = InstructionType.COMPUTE
+                val matchResult = AsmPattern.COMPUTE.find(currentLine)!!
+                dest = matchResult.groupValues[1]
+                comp = matchResult.groupValues[2]
+                jump = matchResult.groupValues[3]
+            }
+            currentLine.matches(AsmPattern.LABEL) -> {
+                instructionType = InstructionType.LABEL
+                val matchResult = AsmPattern.LABEL.find(currentLine)!!
+                address = matchResult.groupValues[1]
+            }
+            else -> {
+                instructionType = null
+            }
         }
-    }
-
-    private fun parseAt() {
-        val m = Pattern.compile(AsmPattern.AT).matcher(currentLine)
-        m.matches()
-        symbol = m.group(1)
-    }
-
-    private fun parseComp() {
-        val m = Pattern.compile(AsmPattern.COMP).matcher(currentLine)
-        m.matches()
-        dest = m.group(1)
-        comp = m.group(2)
-        jump = m.group(3)
-    }
-
-    private fun parseLabel() {
-        val m = Pattern.compile(AsmPattern.LABEL).matcher(currentLine)
-        m.matches()
-        symbol = m.group(1)
-    }
-
-    init {
-        input = Scanner(asm)
     }
 }
