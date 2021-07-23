@@ -21,54 +21,54 @@ class Parser(code: String) {
     }
 
     fun advance() {
-        val currentLine = input.nextLine()
+        val line = input.nextLine()
         when {
-            currentLine.matches(VMPattern.ARITHMETIC) -> {
-                this.commandType = CommandType.C_ARITHMETIC
-                val matchResult = VMPattern.ARITHMETIC.find(currentLine)!!
+            line.matches(VMPattern.ARITHMETIC) -> {
+                this.commandType = CommandType.ARITHMETIC
+                val matchResult = VMPattern.ARITHMETIC.find(line)!!
                 arg1 = matchResult.groupValues[1]
             }
-            currentLine.matches(VMPattern.PUSH) -> {
-                this.commandType = CommandType.C_PUSH
-                val matchResult = VMPattern.PUSH.find(currentLine)!!
-                arg1 = matchResult.groupValues[1]
-                arg2 = matchResult.groupValues[2].toInt()
-            }
-            currentLine.matches(VMPattern.POP) -> {
-                this.commandType = CommandType.C_POP
-                val matchResult = VMPattern.POP.find(currentLine)!!
+            line.matches(VMPattern.PUSH) -> {
+                this.commandType = CommandType.PUSH
+                val matchResult = VMPattern.PUSH.find(line)!!
                 arg1 = matchResult.groupValues[1]
                 arg2 = matchResult.groupValues[2].toInt()
             }
-            currentLine.matches(VMPattern.LABEL) -> {
-                this.commandType = CommandType.C_LABEL
-                val matchResult = VMPattern.LABEL.find(currentLine)!!
-                arg1 = matchResult.groupValues[1]
-            }
-            currentLine.matches(VMPattern.GOTO) -> {
-                this.commandType = CommandType.C_GOTO
-                val matchResult = VMPattern.GOTO.find(currentLine)!!
-                arg1 = matchResult.groupValues[1]
-            }
-            currentLine.matches(VMPattern.IF) -> {
-                this.commandType = CommandType.C_IF
-                val matchResult = VMPattern.IF.find(currentLine)!!
-                arg1 = matchResult.groupValues[1]
-            }
-            currentLine.matches(VMPattern.FUNCTION) -> {
-                this.commandType = CommandType.C_FUNCTION
-                val matchResult = VMPattern.FUNCTION.find(currentLine)!!
+            line.matches(VMPattern.POP) -> {
+                this.commandType = CommandType.POP
+                val matchResult = VMPattern.POP.find(line)!!
                 arg1 = matchResult.groupValues[1]
                 arg2 = matchResult.groupValues[2].toInt()
             }
-            currentLine.matches(VMPattern.CALL) -> {
-                this.commandType = CommandType.C_CALL
-                val matchResult = VMPattern.CALL.find(currentLine)!!
+            line.matches(VMPattern.LABEL) -> {
+                this.commandType = CommandType.LABEL
+                val matchResult = VMPattern.LABEL.find(line)!!
+                arg1 = matchResult.groupValues[1]
+            }
+            line.matches(VMPattern.GOTO) -> {
+                this.commandType = CommandType.GOTO
+                val matchResult = VMPattern.GOTO.find(line)!!
+                arg1 = matchResult.groupValues[1]
+            }
+            line.matches(VMPattern.IF) -> {
+                this.commandType = CommandType.IF
+                val matchResult = VMPattern.IF.find(line)!!
+                arg1 = matchResult.groupValues[1]
+            }
+            line.matches(VMPattern.FUNCTION) -> {
+                this.commandType = CommandType.FUNCTION
+                val matchResult = VMPattern.FUNCTION.find(line)!!
                 arg1 = matchResult.groupValues[1]
                 arg2 = matchResult.groupValues[2].toInt()
             }
-            currentLine.matches(VMPattern.RETURN) -> {
-                this.commandType = CommandType.C_RETURN
+            line.matches(VMPattern.CALL) -> {
+                this.commandType = CommandType.CALL
+                val matchResult = VMPattern.CALL.find(line)!!
+                arg1 = matchResult.groupValues[1]
+                arg2 = matchResult.groupValues[2].toInt()
+            }
+            line.matches(VMPattern.RETURN) -> {
+                this.commandType = CommandType.RETURN
             }
             else -> {
                 this.commandType = null

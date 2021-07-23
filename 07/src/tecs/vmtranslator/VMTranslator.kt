@@ -1,23 +1,23 @@
 package tecs.vmtranslator
 
-class VMTranslator(private val code: String) {
+class VMTranslator(private val fileName: String, private val code: String) {
     fun translate(): String {
         val p = Parser(code)
-        val c = CodeWriter()
+        val c = CodeWriter(fileName)
         while (p.hasMoreCommands()) {
             p.advance()
             when (p.commandType) {
-                CommandType.C_ARITHMETIC -> {
+                CommandType.ARITHMETIC -> {
                     c.writeArithmetic(p.arg1)
                 }
-                CommandType.C_PUSH -> {
-                    c.writePushPop(CommandType.C_PUSH, p.arg1, p.arg2)
+                CommandType.PUSH -> {
+                    c.writePushPop(CommandType.PUSH, p.arg1, p.arg2)
                 }
-                CommandType.C_POP -> {
-                    c.writePushPop(CommandType.C_POP, p.arg1, p.arg2)
+                CommandType.POP -> {
+                    c.writePushPop(CommandType.POP, p.arg1, p.arg2)
                 }
                 else -> {
-                    TODO()
+                    // was comment or empty line
                 }
             }
         }

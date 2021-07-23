@@ -2,8 +2,8 @@ package tecs.vmtranslator
 
 import java.lang.StringBuilder
 
-// TODO write translated VM code lines as comments
-class CodeWriter {
+// TODO remove Ruby translator
+class CodeWriter(private val fileName: String) {
     var output = StringBuilder()
     private var booleanLabelCount = 0
     private val segmentMap = mapOf(
@@ -11,12 +11,12 @@ class CodeWriter {
         "argument" to "ARG",
         "this" to "THIS",
         "that" to "THAT",
+        "pointer" to "3",
         "temp" to "5"
-        // TODO pointer?
-        // TODO static?
     )
 
     fun writeArithmetic(command: String) {
+        output.appendLine("///// $command\n")
         when (command) {
             "add" -> writeBinary("+")
             "sub" -> writeBinary("-")
@@ -38,8 +38,9 @@ class CodeWriter {
             D=M
             A=A-1
             M=$command
+            
             """.trimIndent()
-        output.append(code)
+        output.appendLine(code)
     }
 
     private fun writeUnary(op: String) {
@@ -48,7 +49,7 @@ class CodeWriter {
             A=M-1
             M=${op}M
             """.trimIndent()
-        output.append(code)
+        output.appendLine(code)
     }
 
     private fun writeBoolean(command: String) {
@@ -78,38 +79,46 @@ class CodeWriter {
             ($endLabel)
             @SP
             M=M+1
+            
             """.trimIndent()
-        output.append(code)
+        output.appendLine(code)
         booleanLabelCount += 1
     }
 
     fun writePushPop(commandType: CommandType, segment: String, index: Int) {
-        val segmentAddress: String? =
-            if (segmentMap.containsKey(segment)) segmentMap[segment] else null
+        val segmentAddress: String =
+            if (segmentMap.containsKey(segment)) {
+                segmentMap[segment]!!
+            } else {
+                "$fileName.$index"
+            }
 
-        // compute segment + index
-        // if segment == "constant", use index only
-        output.append(
-            """
-            // compute value address or literal constant
-            @$index
-            D=A
-            """.trimIndent()
-        )
-        if (segmentAddress != null) {
-            output.append(
+        output.appendLine("///// ${commandType.toString().lowercase()} $segment $index\n")
+
+        if (segment != "static") {
+            output.appendLine(
                 """
-                @$segmentAddress
-                D=D+M
+                // save index
+                @$index
+                D=A
+                
                 """.trimIndent()
             )
         }
 
-        if (commandType == CommandType.C_PUSH) {
-            if (segmentAddress != null) {
-                output.append(
+        if (segment != "constant") {
+            output.appendLine("@$segmentAddress")
+            when {
+                segment.isDirect() -> output.appendLine("D=D+M\n")
+                segment.isFixed() -> output.appendLine("D=D+A\n")
+                segment == "static" -> output.appendLine("D=A\n")
+            }
+        }
+
+        if (commandType == CommandType.PUSH) {
+            if (segment != "constant") {
+                output.appendLine(
                     """
-                        
                     // fetch value to push
                     A=D
                     D=M
@@ -117,7 +126,7 @@ class CodeWriter {
                     """.trimIndent()
                 )
             }
-            output.append(
+            output.appendLine(
                 """
                 // push
                 @SP
@@ -130,8 +139,8 @@ class CodeWriter {
 
                 """.trimIndent()
             )
-        } else if (commandType == CommandType.C_POP) {
-            output.append(
+        } else if (commandType == CommandType.POP) {
+            output.appendLine(
                 """
                 // save destination address into temporary variable
                 @R13
@@ -155,3 +164,6 @@ class CodeWriter {
         }
     }
 }
+
+private fun String.isFixed(): Boolean = this in listOf("pointer", "temp")
+private fun String.isDirect(): Boolean = this in listOf("local", "argument", "this", "that")
