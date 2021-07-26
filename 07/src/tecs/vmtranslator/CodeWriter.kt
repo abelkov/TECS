@@ -2,7 +2,6 @@ package tecs.vmtranslator
 
 import java.lang.StringBuilder
 
-// TODO remove Ruby translator
 class CodeWriter(private val fileName: String) {
     var output = StringBuilder()
     private var booleanLabelCount = 0
