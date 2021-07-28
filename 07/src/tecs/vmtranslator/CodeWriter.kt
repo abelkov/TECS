@@ -2,7 +2,8 @@ package tecs.vmtranslator
 
 import java.lang.StringBuilder
 
-class CodeWriter(private val fileName: String) {
+class CodeWriter(var fileName: String) {
+    var functionName: String = "null"
     var output = StringBuilder()
     private var booleanLabelCount = 0
     private val segmentMap = mapOf(
@@ -161,6 +162,40 @@ class CodeWriter(private val fileName: String) {
                 """.trimIndent()
             )
         }
+    }
+
+    fun writeLabel(label: String) {
+        output.appendLine("///// label $label\n")
+        output.appendLine("($fileName.$functionName$$label)\n")
+    }
+
+    fun writeIf(label: String) {
+        output.appendLine("///// if-goto $label\n")
+        output.appendLine(
+            """
+            // pop topmost value
+            @SP
+            AM=M-1
+            D=M
+            
+            // jump if not zero
+            @$fileName.$functionName$$label
+            D;JNE
+            
+            """.trimIndent()
+        )
+    }
+
+    fun writeGoto(label: String) {
+        output.appendLine("///// goto $label\n")
+        output.appendLine(
+            """
+            // goto
+            @$fileName.$functionName${"$"}$label
+            0;JMP
+            
+            """.trimIndent()
+        )
     }
 }
 
