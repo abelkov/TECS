@@ -10,7 +10,7 @@ class VMTranslatorTest {
     @Test
     fun testTranslate() {
         File("testData").listFiles { _, name -> name.endsWith(".vm") }!!.forEach { file ->
-            // if (file.name != "FibonacciSeries.vm") return@forEach
+            // if (file.name != "SimpleFunction.vm") return@forEach
 
             val vmPath = file.toPath()
             val testData = vmPath.parent

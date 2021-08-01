@@ -225,7 +225,7 @@ M=D
 @SP
 M=M+1
 
-///// if-goto COMPUTE_ELEMENT
+///// if-goto COMPUTE_ELEMENT // if num_of_elements > 0, goto COMPUTE_ELEMENT
 
 // pop topmost value
 @SP
@@ -233,13 +233,13 @@ AM=M-1
 D=M
 
 // jump if not zero
-@FibonacciSeries.null$COMPUTE_ELEMENT
+@FibonacciSeries.null$COMPUTE_ELEMENT // if num_of_elements > 0, goto COMPUTE_ELEMENT
 D;JNE
 
-///// goto END_PROGRAM
+///// goto END_PROGRAM        // otherwise, goto END_PROGRAM
 
 // goto
-@FibonacciSeries.null$END_PROGRAM
+@FibonacciSeries.null$END_PROGRAM        // otherwise, goto END_PROGRAM
 0;JMP
 
 ///// label COMPUTE_ELEMENT

@@ -3,6 +3,7 @@ package tecs.vmtranslator
 import java.lang.StringBuilder
 
 class CodeWriter(var fileName: String) {
+    private var returnAddressIndex = 0
     var functionName: String = "null"
     var output = StringBuilder()
     private var booleanLabelCount = 0
@@ -48,6 +49,7 @@ class CodeWriter(var fileName: String) {
             @SP
             A=M-1
             M=${op}M
+            
             """.trimIndent()
         output.appendLine(code)
     }
@@ -194,6 +196,181 @@ class CodeWriter(var fileName: String) {
             @$fileName.$functionName${"$"}$label
             0;JMP
             
+            """.trimIndent()
+        )
+    }
+
+    fun writeFunction(functionName: String, nArgs: Int) {
+        returnAddressIndex = 0
+        output.appendLine("///// function $functionName $nArgs\n")
+        output.appendLine("($fileName.$functionName)")
+        repeat(nArgs) {
+            output.appendLine(
+                """
+                // push 0
+                @SP
+                A=M
+                M=0
+                @SP
+                M=M+1
+
+                """.trimIndent()
+            )
+        }
+    }
+
+    fun writeCall(fqnFunctionName: String, nArgs: Int) {
+        output.appendLine("///// call $fqnFunctionName $nArgs\n")
+        val returnAddress = "$fqnFunctionName\$ret.$returnAddressIndex"
+        returnAddressIndex++
+        output.appendLine(
+            """
+            // push <returnAddress>
+            @$returnAddress
+            D=A
+            @SP
+            A=M
+            M=D
+            @SP
+            M=M+1
+            
+            // push LCL
+            @LCL
+            D=M
+            @SP
+            A=M
+            M=D
+            @SP
+            M=M+1
+            
+            // push ARG
+            @ARG
+            D=M
+            @SP
+            A=M
+            M=D
+            @SP
+            M=M+1
+            
+            // push THIS
+            @THIS
+            D=M
+            @SP
+            A=M
+            M=D
+            @SP
+            M=M+1
+            
+            // push THAT
+            @THAT
+            D=M
+            @SP
+            A=M
+            M=D
+            @SP
+            M=M+1
+            
+            // ARG = SP-5-nArgs
+            @SP
+            D=M
+            @${5 - nArgs}
+            D=D-A
+            @ARG
+            M=D
+            
+            // LCL = SP
+            @SP
+            D=M
+            @LCL
+            M=D
+            
+            // goto <f>
+            @$fqnFunctionName
+            0;JMP
+            
+            // (<returnAddress>)
+            ($returnAddress)
+
+            """.trimIndent()
+        )
+    }
+
+    fun writeReturn() {
+        output.appendLine(
+            """
+            ///// return
+            
+            // frame = LCL
+            @LCL
+            D=M
+            @R13
+            M=D
+            
+            // retAddr = *(frame-5)
+            @5
+            D=D-A
+            A=D
+            D=M
+            @R14
+            M=D
+            
+            // *ARG = pop()
+            @SP
+            M=M-1
+            D=M
+            A=D
+            D=M
+            @ARG
+            A=M
+            M=D
+            
+            // SP = ARG+1
+            @ARG
+            D=M+1
+            @SP
+            M=D
+            
+            // THAT = *(frame-1)
+            @R13
+            D=M
+            A=D-1
+            D=M
+            @THAT
+            M=D
+            
+            // THIS = *(frame-2)
+            @R13
+            D=M
+            @2
+            A=D-A
+            D=M
+            @THIS
+            M=D
+                        
+            // ARG = *(frame-3)
+            @R13
+            D=M
+            @3
+            A=D-A
+            D=M
+            @ARG
+            M=D
+            
+            // LCL = *(frame-4)
+            @R13
+            D=M
+            @4
+            A=D-A
+            D=M
+            @LCL
+            M=D
+            
+            // goto retAddr
+            @R14
+            D=M
+            A=D
+            0;JMP
+
             """.trimIndent()
         )
     }

@@ -15,6 +15,9 @@ class VMTranslator(private val fileName: String, private val code: String) {
                 LABEL -> c.writeLabel(p.arg1)
                 IF -> c.writeIf(p.arg1)
                 GOTO -> c.writeGoto(p.arg1)
+                FUNCTION -> c.writeFunction(p.arg1, p.arg2)
+                CALL -> c.writeCall(p.arg1, p.arg2)
+                RETURN -> c.writeReturn()
                 else -> {
                     // was comment or empty line, ignore
                 }

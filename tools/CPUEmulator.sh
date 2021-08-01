@@ -29,5 +29,5 @@ else
 		arg1="${dir}/$1"
 	fi
 #	echo Running "$arg1"
-	/home/belkov/.jdks/java11/bin/java -Dsun.java2d.uiScale=2 -classpath "${CLASSPATH}:bin/classes:bin/lib/Hack.jar:bin/lib/HackGUI.jar:bin/lib/Simulators.jar:bin/lib/SimulatorsGUI.jar:bin/lib/Compilers.jar" CPUEmulatorMain "$arg1"
+	/home/belkov/.jdks/java11/bin/java -Dsun.java2d.uiScale=3 -classpath "${CLASSPATH}:bin/classes:bin/lib/Hack.jar:bin/lib/HackGUI.jar:bin/lib/Simulators.jar:bin/lib/SimulatorsGUI.jar:bin/lib/Compilers.jar" CPUEmulatorMain "$arg1"
 fi
