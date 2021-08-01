@@ -2,10 +2,15 @@ package tecs.vmtranslator
 
 import java.lang.StringBuilder
 
-class CodeWriter(var fileName: String) {
-    private var returnAddressIndex = 0
-    var functionName: String = "null"
+class CodeWriter {
     var output = StringBuilder()
+    var fileName: String = ""
+        set(value) {
+            field = value
+            output.appendLine("////////// File $value\n")
+        }
+    private var returnAddressIndex = 0
+    private var functionName: String = "null"
     private var booleanLabelCount = 0
     private val segmentMap = mapOf(
         "local" to "LCL",
@@ -193,7 +198,7 @@ class CodeWriter(var fileName: String) {
         output.appendLine(
             """
             // goto
-            @$fileName.$functionName${"$"}$label
+            @$fileName.$functionName$$label
             0;JMP
             
             """.trimIndent()
@@ -203,7 +208,7 @@ class CodeWriter(var fileName: String) {
     fun writeFunction(functionName: String, nArgs: Int) {
         returnAddressIndex = 0
         output.appendLine("///// function $functionName $nArgs\n")
-        output.appendLine("($fileName.$functionName)")
+        output.appendLine("($functionName)")
         repeat(nArgs) {
             output.appendLine(
                 """

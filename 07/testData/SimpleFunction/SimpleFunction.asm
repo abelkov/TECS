@@ -1,6 +1,8 @@
+////////// File SimpleFunction
+
 ///// function SimpleFunction.test 2
 
-(SimpleFunction.SimpleFunction.test)
+(SimpleFunction.test)
 // push 0
 @SP
 A=M

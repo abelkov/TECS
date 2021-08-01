@@ -2,10 +2,15 @@ package tecs.vmtranslator
 
 import tecs.vmtranslator.CommandType.*
 
-class VMTranslator(private val fileName: String, private val code: String) {
-    fun translate(): String {
+class VMTranslator {
+    private val c = CodeWriter()
+    val output: String
+        get() = c.output.toString()
+
+    fun translate(fileName: String, code: String) {
         val p = Parser(code)
-        val c = CodeWriter(fileName)
+        c.fileName = fileName
+
         while (p.hasMoreCommands()) {
             p.advance()
             when (p.commandType) {
@@ -23,7 +28,5 @@ class VMTranslator(private val fileName: String, private val code: String) {
                 }
             }
         }
-
-        return c.output.toString()
     }
 }

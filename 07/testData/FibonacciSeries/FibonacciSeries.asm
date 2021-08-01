@@ -1,101 +1,6 @@
-///// push constant 10
+////////// File FibonacciSeries
 
-// save index
-@10
-D=A
-
-// push
-@SP
-A=M
-M=D
-
-// increment SP
-@SP
-M=M+1
-
-///// pop local 0
-
-// save index
-@0
-D=A
-
-@LCL
-D=D+M
-
-// save destination address into temporary variable
-@R13
-M=D
-
-// decrement SP
-@SP
-M=M-1
-
-// fetch value to pop
-A=M
-D=M
-
-// store value at destination address
-@R13
-A=M
-M=D
-
-///// push constant 21
-
-// save index
-@21
-D=A
-
-// push
-@SP
-A=M
-M=D
-
-// increment SP
-@SP
-M=M+1
-
-///// push constant 22
-
-// save index
-@22
-D=A
-
-// push
-@SP
-A=M
-M=D
-
-// increment SP
-@SP
-M=M+1
-
-///// pop argument 2
-
-// save index
-@2
-D=A
-
-@ARG
-D=D+M
-
-// save destination address into temporary variable
-@R13
-M=D
-
-// decrement SP
-@SP
-M=M-1
-
-// fetch value to pop
-A=M
-D=M
-
-// store value at destination address
-@R13
-A=M
-M=D
-
-///// pop argument 1
+///// push argument 1
 
 // save index
 @1
@@ -104,28 +9,9 @@ D=A
 @ARG
 D=D+M
 
-// save destination address into temporary variable
-@R13
-M=D
-
-// decrement SP
-@SP
-M=M-1
-
-// fetch value to pop
-A=M
+// fetch value to push
+A=D
 D=M
-
-// store value at destination address
-@R13
-A=M
-M=D
-
-///// push constant 36
-
-// save index
-@36
-D=A
 
 // push
 @SP
@@ -136,14 +22,14 @@ M=D
 @SP
 M=M+1
 
-///// pop this 6
+///// pop pointer 1
 
 // save index
-@6
+@1
 D=A
 
-@THIS
-D=D+M
+@3
+D=D+A
 
 // save destination address into temporary variable
 @R13
@@ -162,10 +48,10 @@ D=M
 A=M
 M=D
 
-///// push constant 42
+///// push constant 0
 
 // save index
-@42
+@0
 D=A
 
 // push
@@ -177,25 +63,10 @@ M=D
 @SP
 M=M+1
 
-///// push constant 45
+///// pop that 0
 
 // save index
-@45
-D=A
-
-// push
-@SP
-A=M
-M=D
-
-// increment SP
-@SP
-M=M+1
-
-///// pop that 5
-
-// save index
-@5
+@0
 D=A
 
 @THAT
@@ -217,6 +88,217 @@ D=M
 @R13
 A=M
 M=D
+
+///// push constant 1
+
+// save index
+@1
+D=A
+
+// push
+@SP
+A=M
+M=D
+
+// increment SP
+@SP
+M=M+1
+
+///// pop that 1
+
+// save index
+@1
+D=A
+
+@THAT
+D=D+M
+
+// save destination address into temporary variable
+@R13
+M=D
+
+// decrement SP
+@SP
+M=M-1
+
+// fetch value to pop
+A=M
+D=M
+
+// store value at destination address
+@R13
+A=M
+M=D
+
+///// push argument 0
+
+// save index
+@0
+D=A
+
+@ARG
+D=D+M
+
+// fetch value to push
+A=D
+D=M
+
+// push
+@SP
+A=M
+M=D
+
+// increment SP
+@SP
+M=M+1
+
+///// push constant 2
+
+// save index
+@2
+D=A
+
+// push
+@SP
+A=M
+M=D
+
+// increment SP
+@SP
+M=M+1
+
+///// sub
+
+@SP
+AM=M-1
+D=M
+A=A-1
+M=M-D
+
+///// pop argument 0
+
+// save index
+@0
+D=A
+
+@ARG
+D=D+M
+
+// save destination address into temporary variable
+@R13
+M=D
+
+// decrement SP
+@SP
+M=M-1
+
+// fetch value to pop
+A=M
+D=M
+
+// store value at destination address
+@R13
+A=M
+M=D
+
+///// label MAIN_LOOP_START
+
+(FibonacciSeries.null$MAIN_LOOP_START)
+
+///// push argument 0
+
+// save index
+@0
+D=A
+
+@ARG
+D=D+M
+
+// fetch value to push
+A=D
+D=M
+
+// push
+@SP
+A=M
+M=D
+
+// increment SP
+@SP
+M=M+1
+
+///// if-goto COMPUTE_ELEMENT // if num_of_elements > 0, goto COMPUTE_ELEMENT
+
+// pop topmost value
+@SP
+AM=M-1
+D=M
+
+// jump if not zero
+@FibonacciSeries.null$COMPUTE_ELEMENT // if num_of_elements > 0, goto COMPUTE_ELEMENT
+D;JNE
+
+///// goto END_PROGRAM        // otherwise, goto END_PROGRAM
+
+// goto
+@FibonacciSeries.null$END_PROGRAM        // otherwise, goto END_PROGRAM
+0;JMP
+
+///// label COMPUTE_ELEMENT
+
+(FibonacciSeries.null$COMPUTE_ELEMENT)
+
+///// push that 0
+
+// save index
+@0
+D=A
+
+@THAT
+D=D+M
+
+// fetch value to push
+A=D
+D=M
+
+// push
+@SP
+A=M
+M=D
+
+// increment SP
+@SP
+M=M+1
+
+///// push that 1
+
+// save index
+@1
+D=A
+
+@THAT
+D=D+M
+
+// fetch value to push
+A=D
+D=M
+
+// push
+@SP
+A=M
+M=D
+
+// increment SP
+@SP
+M=M+1
+
+///// add
+
+@SP
+AM=M-1
+D=M
+A=A-1
+M=D+M
 
 ///// pop that 2
 
@@ -244,10 +326,32 @@ D=M
 A=M
 M=D
 
-///// push constant 510
+///// push pointer 1
 
 // save index
-@510
+@1
+D=A
+
+@3
+D=D+A
+
+// fetch value to push
+A=D
+D=M
+
+// push
+@SP
+A=M
+M=D
+
+// increment SP
+@SP
+M=M+1
+
+///// push constant 1
+
+// save index
+@1
 D=A
 
 // push
@@ -259,13 +363,21 @@ M=D
 @SP
 M=M+1
 
-///// pop temp 6
+///// add
+
+@SP
+AM=M-1
+D=M
+A=A-1
+M=D+M
+
+///// pop pointer 1
 
 // save index
-@6
+@1
 D=A
 
-@5
+@3
 D=D+A
 
 // save destination address into temporary variable
@@ -285,62 +397,10 @@ D=M
 A=M
 M=D
 
-///// push local 0
+///// push argument 0
 
 // save index
 @0
-D=A
-
-@LCL
-D=D+M
-
-// fetch value to push
-A=D
-D=M
-
-// push
-@SP
-A=M
-M=D
-
-// increment SP
-@SP
-M=M+1
-
-///// push that 5
-
-// save index
-@5
-D=A
-
-@THAT
-D=D+M
-
-// fetch value to push
-A=D
-D=M
-
-// push
-@SP
-A=M
-M=D
-
-// increment SP
-@SP
-M=M+1
-
-///// add
-
-@SP
-AM=M-1
-D=M
-A=A-1
-M=D+M
-
-///// push argument 1
-
-// save index
-@1
 D=A
 
 @ARG
@@ -359,26 +419,11 @@ M=D
 @SP
 M=M+1
 
-///// sub
-
-@SP
-AM=M-1
-D=M
-A=A-1
-M=M-D
-
-///// push this 6
+///// push constant 1
 
 // save index
-@6
+@1
 D=A
-
-@THIS
-D=D+M
-
-// fetch value to push
-A=D
-D=M
 
 // push
 @SP
@@ -388,36 +433,6 @@ M=D
 // increment SP
 @SP
 M=M+1
-
-///// push this 6
-
-// save index
-@6
-D=A
-
-@THIS
-D=D+M
-
-// fetch value to push
-A=D
-D=M
-
-// push
-@SP
-A=M
-M=D
-
-// increment SP
-@SP
-M=M+1
-
-///// add
-
-@SP
-AM=M-1
-D=M
-A=A-1
-M=D+M
 
 ///// sub
 
@@ -427,33 +442,39 @@ D=M
 A=A-1
 M=M-D
 
-///// push temp 6
+///// pop argument 0
 
 // save index
-@6
+@0
 D=A
 
-@5
-D=D+A
+@ARG
+D=D+M
 
-// fetch value to push
-A=D
+// save destination address into temporary variable
+@R13
+M=D
+
+// decrement SP
+@SP
+M=M-1
+
+// fetch value to pop
+A=M
 D=M
 
-// push
-@SP
+// store value at destination address
+@R13
 A=M
 M=D
 
-// increment SP
-@SP
-M=M+1
+///// goto MAIN_LOOP_START
 
-///// add
+// goto
+@FibonacciSeries.null$MAIN_LOOP_START
+0;JMP
 
-@SP
-AM=M-1
-D=M
-A=A-1
-M=D+M
+///// label END_PROGRAM
+
+(FibonacciSeries.null$END_PROGRAM)
 
