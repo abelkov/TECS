@@ -10,7 +10,7 @@ class VMTranslatorTest {
     @Test
     fun testTranslate() {
         File("testData").listFiles { it, _ -> it.isDirectory }!!.forEach { test: File ->
-            if (test.name != "NestedCall") return@forEach
+            // if (test.name != "NestedCall") return@forEach
 
             val testPath = test.toPath()
             val asmPath = testPath.resolve("${test.name}.asm")

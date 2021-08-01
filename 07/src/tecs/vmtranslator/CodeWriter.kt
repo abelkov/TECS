@@ -206,9 +206,10 @@ class CodeWriter {
     }
 
     fun writeFunction(functionName: String, nArgs: Int) {
+        this.functionName = functionName
         returnAddressIndex = 0
         output.appendLine("///// function $functionName $nArgs\n")
-        output.appendLine("($functionName)")
+        output.appendLine("($functionName)\n")
         repeat(nArgs) {
             output.appendLine(
                 """
@@ -226,7 +227,7 @@ class CodeWriter {
 
     fun writeCall(fqnFunctionName: String, nArgs: Int) {
         output.appendLine("///// call $fqnFunctionName $nArgs\n")
-        val returnAddress = "$fqnFunctionName\$ret.$returnAddressIndex"
+        val returnAddress = "$functionName\$ret.$returnAddressIndex"
         returnAddressIndex++
         output.appendLine(
             """
@@ -278,7 +279,7 @@ class CodeWriter {
             // ARG = SP-5-nArgs
             @SP
             D=M
-            @${5 - nArgs}
+            @${5 + nArgs}
             D=D-A
             @ARG
             M=D

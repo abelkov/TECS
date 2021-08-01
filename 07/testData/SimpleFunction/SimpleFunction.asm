@@ -3,6 +3,7 @@
 ///// function SimpleFunction.test 2
 
 (SimpleFunction.test)
+
 // push 0
 @SP
 A=M
