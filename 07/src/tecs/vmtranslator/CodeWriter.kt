@@ -3,15 +3,15 @@ package tecs.vmtranslator
 import java.lang.StringBuilder
 
 class CodeWriter {
-    var output = StringBuilder()
+    val output = StringBuilder()
     var fileName: String = ""
         set(value) {
             field = value
             output.appendLine("////////// File $value\n")
         }
-    private var returnAddressIndex = 0
     private var functionName: String = "null"
-    private var booleanLabelCount = 0
+    private var returnAddressIndex = 0
+    private var booleanLabelIndex = 0
     private val segmentMap = mapOf(
         "local" to "LCL",
         "argument" to "ARG",
@@ -37,8 +37,10 @@ class CodeWriter {
     }
 
     private fun writeBinary(op: String) {
+        // TODO is the `if` really necessary?
         val command = if (op == "-") "M-D" else "D${op}M"
-        val code = """
+        output.appendLine(
+            """
             @SP
             AM=M-1
             D=M
@@ -46,23 +48,27 @@ class CodeWriter {
             M=$command
             
             """.trimIndent()
-        output.appendLine(code)
+        )
     }
 
     private fun writeUnary(op: String) {
-        val code = """
+        output.appendLine(
+            """
             @SP
             A=M-1
             M=${op}M
             
             """.trimIndent()
-        output.appendLine(code)
+        )
     }
 
     private fun writeBoolean(command: String) {
-        val trueLabel = "BOOLEANTRUE$booleanLabelCount"
-        val endLabel = "BOOLEANEND$booleanLabelCount"
-        val code = """
+        // TODO prepend file name to label?
+        val trueLabel = "BOOLEANTRUE$booleanLabelIndex"
+        val endLabel = "BOOLEANEND$booleanLabelIndex"
+        booleanLabelIndex += 1
+        output.appendLine(
+            """
             @SP
             M=M-1
             AM=M-1
@@ -88,8 +94,7 @@ class CodeWriter {
             M=M+1
             
             """.trimIndent()
-        output.appendLine(code)
-        booleanLabelCount += 1
+        )
     }
 
     fun writePushPop(commandType: CommandType, segment: String, index: Int) {
@@ -97,7 +102,7 @@ class CodeWriter {
             if (segmentMap.containsKey(segment)) {
                 segmentMap[segment]!!
             } else {
-                "$fileName.$index"
+                "$fileName.$index" // for statics
             }
 
         output.appendLine("///// ${commandType.toString().lowercase()} $segment $index\n")
@@ -177,9 +182,10 @@ class CodeWriter {
     }
 
     fun writeIf(label: String) {
-        output.appendLine("///// if-goto $label\n")
         output.appendLine(
             """
+            ///// if-goto $label
+
             // pop topmost value
             @SP
             AM=M-1
@@ -194,10 +200,9 @@ class CodeWriter {
     }
 
     fun writeGoto(label: String) {
-        output.appendLine("///// goto $label\n")
         output.appendLine(
             """
-            // goto
+            ///// goto $label
             @$fileName.$functionName$$label
             0;JMP
             
@@ -207,7 +212,7 @@ class CodeWriter {
 
     fun writeFunction(functionName: String, nArgs: Int) {
         this.functionName = functionName
-        returnAddressIndex = 0
+        returnAddressIndex = 0 // reset index on entering a new function
         output.appendLine("///// function $functionName $nArgs\n")
         output.appendLine("($functionName)\n")
         repeat(nArgs) {
@@ -226,11 +231,12 @@ class CodeWriter {
     }
 
     fun writeCall(fqnFunctionName: String, nArgs: Int) {
-        output.appendLine("///// call $fqnFunctionName $nArgs\n")
         val returnAddress = "$functionName\$ret.$returnAddressIndex"
         returnAddressIndex++
         output.appendLine(
             """
+            ///// call $fqnFunctionName $nArgs
+                
             // push <returnAddress>
             @$returnAddress
             D=A

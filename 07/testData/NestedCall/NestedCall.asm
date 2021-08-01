@@ -5,7 +5,7 @@
 (Sys.init)
 
 ///// call Sys.main 0
-
+    
 // push <returnAddress>
 @Sys.init$ret.0
 D=A
@@ -103,8 +103,6 @@ M=D
 (Sys.Sys.init$LOOP)
 
 ///// goto LOOP
-
-// goto
 @Sys.Sys.init$LOOP
 0;JMP
 
@@ -128,7 +126,7 @@ M=D
 M=M+1
 
 ///// call Sys.add12 1
-
+    
 // push <returnAddress>
 @Sys.main$ret.0
 D=A
