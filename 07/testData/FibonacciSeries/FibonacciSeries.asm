@@ -203,7 +203,7 @@ M=D
 
 ///// label MAIN_LOOP_START
 
-(FibonacciSeries.null$MAIN_LOOP_START)
+(null$MAIN_LOOP_START)
 
 ///// push argument 0
 
@@ -227,7 +227,7 @@ M=D
 @SP
 M=M+1
 
-///// if-goto COMPUTE_ELEMENT // if num_of_elements > 0, goto COMPUTE_ELEMENT
+///// if-goto COMPUTE_ELEMENT
 
 // pop topmost value
 @SP
@@ -235,18 +235,16 @@ AM=M-1
 D=M
 
 // jump if not zero
-@FibonacciSeries.null$COMPUTE_ELEMENT // if num_of_elements > 0, goto COMPUTE_ELEMENT
+@null$COMPUTE_ELEMENT
 D;JNE
 
-///// goto END_PROGRAM        // otherwise, goto END_PROGRAM
-
-// goto
-@FibonacciSeries.null$END_PROGRAM        // otherwise, goto END_PROGRAM
+///// goto END_PROGRAM
+@null$END_PROGRAM
 0;JMP
 
 ///// label COMPUTE_ELEMENT
 
-(FibonacciSeries.null$COMPUTE_ELEMENT)
+(null$COMPUTE_ELEMENT)
 
 ///// push that 0
 
@@ -469,12 +467,10 @@ A=M
 M=D
 
 ///// goto MAIN_LOOP_START
-
-// goto
-@FibonacciSeries.null$MAIN_LOOP_START
+@null$MAIN_LOOP_START
 0;JMP
 
 ///// label END_PROGRAM
 
-(FibonacciSeries.null$END_PROGRAM)
+(null$END_PROGRAM)
 

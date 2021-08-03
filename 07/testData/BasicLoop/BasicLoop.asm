@@ -1,9 +1,3 @@
-// Start code gen: init SP to 256
-@256
-D=A
-@SP
-M=D
-
 ////////// File BasicLoop
 
 ///// push constant 0
@@ -49,7 +43,7 @@ M=D
 
 ///// label LOOP_START
 
-(BasicLoop.null$LOOP_START)
+(null$LOOP_START)
 
 ///// push argument 0
 
@@ -222,7 +216,7 @@ M=D
 @SP
 M=M+1
 
-///// if-goto LOOP_START // If counter > 0, goto LOOP_START
+///// if-goto LOOP_START
 
 // pop topmost value
 @SP
@@ -230,7 +224,7 @@ AM=M-1
 D=M
 
 // jump if not zero
-@BasicLoop.null$LOOP_START // If counter > 0, goto LOOP_START
+@null$LOOP_START
 D;JNE
 
 ///// push local 0

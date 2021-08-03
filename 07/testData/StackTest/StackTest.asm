@@ -1,9 +1,3 @@
-// Start code gen: init SP to 256
-@256
-D=A
-@SP
-M=D
-
 ////////// File StackTest
 
 ///// push constant 17

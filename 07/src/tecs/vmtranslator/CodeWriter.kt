@@ -2,7 +2,7 @@ package tecs.vmtranslator
 
 import java.lang.StringBuilder
 
-class CodeWriter {
+class CodeWriter(generateInit: Boolean) {
     val output = StringBuilder()
     var fileName: String = ""
         set(value) {
@@ -22,20 +22,21 @@ class CodeWriter {
     )
 
     init {
-        // TODO is it correct to do this?
-        output.appendLine(
-            """
-            // Start code gen: init SP to 256 and call Sys.init
-            @256
-            D=A
-            @SP
-            M=D
-            
-            @Sys.init
-            0;JMP
-
-            """.trimIndent()
-        )
+        if (generateInit) {
+            output.appendLine(
+                """
+                // Start code gen: init SP to 256 and call Sys.init
+                @256
+                D=A
+                @SP
+                M=D
+    
+                @Sys.init
+                0;JMP
+    
+                """.trimIndent()
+            )
+        }
     }
 
     fun writeArithmetic(command: String) {

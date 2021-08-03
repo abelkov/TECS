@@ -2,8 +2,8 @@ package tecs.vmtranslator
 
 import tecs.vmtranslator.CommandType.*
 
-class VMTranslator {
-    private val c = CodeWriter()
+class VMTranslator(generateInit: Boolean) {
+    private val c = CodeWriter(generateInit)
     val output: String
         get() = c.output.toString()
 

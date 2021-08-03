@@ -10,14 +10,16 @@ class VMTranslatorTest {
     @Test
     fun testTranslate() {
         File("testData").listFiles { it, _ -> it.isDirectory }!!.forEach { test: File ->
-            if (test.name != "FibonacciElement") return@forEach
+            // if (test.name != "NestedCall") return@forEach
 
             val testPath = test.toPath()
             val asmPath = testPath.resolve("${test.name}.asm")
             val tstPath = testPath.resolve("${test.name}.tst")
             val outPath = testPath.resolve("${test.name}.out")
             val cmpPath = testPath.resolve("${test.name}.cmp")
-            val translator = VMTranslator()
+
+            val generateInit = test.name in listOf("FibonacciElement")
+            val translator = VMTranslator(generateInit = generateInit)
 
             test.listFiles { _, name -> name.endsWith(".vm") }!!.forEach { vmFile ->
                 val vmCode = Files.readString(vmFile.toPath())
