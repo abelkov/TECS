@@ -1,3 +1,12 @@
+// Start code gen: init SP to 256 and call Sys.init
+@256
+D=A
+@SP
+M=D
+
+@Sys.init
+0;JMP
+
 ////////// File Sys
 
 ///// function Sys.init 0

@@ -21,6 +21,23 @@ class CodeWriter {
         "temp" to "5"
     )
 
+    init {
+        // TODO is it correct to do this?
+        output.appendLine(
+            """
+            // Start code gen: init SP to 256 and call Sys.init
+            @256
+            D=A
+            @SP
+            M=D
+            
+            @Sys.init
+            0;JMP
+
+            """.trimIndent()
+        )
+    }
+
     fun writeArithmetic(command: String) {
         output.appendLine("///// $command\n")
         when (command) {
@@ -178,7 +195,7 @@ class CodeWriter {
 
     fun writeLabel(label: String) {
         output.appendLine("///// label $label\n")
-        output.appendLine("($fileName.$functionName$$label)\n")
+        output.appendLine("($functionName$$label)\n")
     }
 
     fun writeIf(label: String) {
@@ -192,7 +209,7 @@ class CodeWriter {
             D=M
             
             // jump if not zero
-            @$fileName.$functionName$$label
+            @$functionName$$label
             D;JNE
             
             """.trimIndent()
@@ -203,7 +220,7 @@ class CodeWriter {
         output.appendLine(
             """
             ///// goto $label
-            @$fileName.$functionName$$label
+            @$functionName$$label
             0;JMP
             
             """.trimIndent()
