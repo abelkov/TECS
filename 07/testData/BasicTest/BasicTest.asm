@@ -337,7 +337,7 @@ M=M+1
 AM=M-1
 D=M
 A=A-1
-M=D+M
+M=M+D
 
 ///// push argument 1
 
@@ -419,7 +419,7 @@ M=M+1
 AM=M-1
 D=M
 A=A-1
-M=D+M
+M=M+D
 
 ///// sub
 
@@ -457,5 +457,5 @@ M=M+1
 AM=M-1
 D=M
 A=A-1
-M=D+M
+M=M+D
 

@@ -55,15 +55,13 @@ class CodeWriter(generateInit: Boolean) {
     }
 
     private fun writeBinary(op: String) {
-        // TODO is the `if` really necessary?
-        val command = if (op == "-") "M-D" else "D${op}M"
         output.appendLine(
             """
             @SP
             AM=M-1
             D=M
             A=A-1
-            M=$command
+            M=M${op}D
             
             """.trimIndent()
         )
@@ -81,7 +79,6 @@ class CodeWriter(generateInit: Boolean) {
     }
 
     private fun writeBoolean(command: String) {
-        // TODO prepend file name to label?
         val trueLabel = "BOOLEANTRUE$booleanLabelIndex"
         val endLabel = "BOOLEANEND$booleanLabelIndex"
         booleanLabelIndex += 1
