@@ -3,8 +3,8 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/06/06.iml" filepath="$PROJECT_DIR$/06/06.iml" />
-      <module fileurl="file://$PROJECT_DIR$/07/07.iml" filepath="$PROJECT_DIR$/07/07.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/TECS.iml" filepath="$PROJECT_DIR$/.idea/TECS.iml" />
+      <module fileurl="file://$PROJECT_DIR$/VMTranslator/VMTranslator.iml" filepath="$PROJECT_DIR$/VMTranslator/VMTranslator.iml" />
     </modules>
   </component>
 </project>
