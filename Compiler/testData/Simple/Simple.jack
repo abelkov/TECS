@@ -1,0 +1,9 @@
+{} class
+game // end of line comment
+
+/* multi
+line
+comment
+*/
+
+123 "my string"  // comment

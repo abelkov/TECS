@@ -1,0 +1,8 @@
+<tokens>
+    <symbol>{</symbol>
+    <symbol>}</symbol>
+    <keyword>class</keyword>
+    <identifier>game</identifier>
+    <integerConstant>123</integerConstant>
+    <stringConstant>my string</stringConstant>
+</tokens>
