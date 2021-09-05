@@ -16,9 +16,9 @@ private val escapedSymbols = mapOf(
 class JackAnalyzerTest {
 
     @Test
-    fun test() {
+    fun testTokenizer() {
         File("testData").listFiles { it, _ -> it.isDirectory }!!.forEach { testDir: File ->
-            // if (testDir.name != "ArrayTest") return@forEach
+            if (testDir.name != "Simple") return@forEach
 
             val testPath = testDir.toPath()
 
@@ -27,40 +27,36 @@ class JackAnalyzerTest {
 
                 val code = Files.readString(jackFile.toPath())
                 val baseName = jackFile.name.removeSuffix(".jack")
+                val qualifiedName = "${testDir.name}/$baseName"
 
                 val tokenizerPath = testPath.resolve("${baseName}T.xml")
                 val tokenizerExpected = Files.readString(tokenizerPath)
-                val tokenizer = JackTokenizer(code)
-                checkTokenizer("${testDir.name}/$baseName", tokenizer, tokenizerExpected)
-
-                // val parserPath = testPath.resolve("$baseName.xml")
-                // val parserExpected = Files.readString(parserPath)
-
-                // translator.translate(jackFile.name.removeSuffix(".vm"), jackCode)
+                checkTokenizer(qualifiedName, JackTokenizer(code), tokenizerExpected)
             }
-
-
-            // val asmPath = testPath.resolve("${test.name}.asm")
-            // val tstPath = testPath.resolve("${test.name}.tst")
-            // val outPath = testPath.resolve("${test.name}.out")
-            // val cmpPath = testPath.resolve("${test.name}.cmp")
-            //
-            // val generateInit = test.name in listOf("FibonacciElement", "StaticsTest")
-            // val translator = VMTranslator(generateInit = generateInit)
-            //
-            // test.listFiles { _, name -> name.endsWith(".vm") }!!.forEach { vmFile ->
-            //     val vmCode = Files.readString(vmFile.toPath())
-            //     translator.translate(vmFile.name.removeSuffix(".vm"), vmCode)
-            // }
-            //
-            // Files.writeString(asmPath, translator.output)
-            // val command = "../tools/CPUEmulator.sh ${tstPath.toAbsolutePath()}"
-            // val cpuEmulator = Runtime.getRuntime().exec(command)
-            // cpuEmulator.waitFor()
-            //
-            // assertEquals(Files.readString(cmpPath), Files.readString(outPath), "${test.name} failed")
         }
+    }
 
+    @Test
+    fun testParser() {
+        File("testData").listFiles { it, _ -> it.isDirectory }!!.forEach { testDir: File ->
+            if (testDir.name != "ExpressionlessSquare") return@forEach
+
+            val testPath = testDir.toPath()
+
+            testDir.listFiles { _, name -> name.endsWith(".jack") }!!.forEach loop@{ jackFile ->
+                if (jackFile.name != "Main.jack") return@loop
+
+                val code = Files.readString(jackFile.toPath())
+                val baseName = jackFile.name.removeSuffix(".jack")
+                val qualifiedName = "${testDir.name}/$baseName"
+
+                val parserPath = testPath.resolve("$baseName.xml")
+                val parserExpected = Files.readString(parserPath)
+
+                val engine = CompilationEngine(JackTokenizer(code))
+                assertEquals(parserExpected, engine.compile(), "parser for '$qualifiedName' failed")
+            }
+        }
     }
 
     private fun checkTokenizer(testName: String, t: JackTokenizer, expected: String) {

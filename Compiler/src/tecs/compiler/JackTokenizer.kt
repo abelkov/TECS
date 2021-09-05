@@ -25,11 +25,7 @@ class JackTokenizer(private val code: String) {
     var stringVal: String = ""
         private set
 
-    fun hasMoreTokens(): Boolean {
-        return !isEOF()
-    }
-
-    private fun isEOF() = current >= code.length
+    fun hasMoreTokens(): Boolean = current < code.length
 
     fun advance() {
         val c = code[current].toString()
@@ -46,6 +42,7 @@ class JackTokenizer(private val code: String) {
             c.isBlank() -> {
                 tokenType = null
                 consume()
+                if (hasMoreTokens()) advance()
             }
 
             c == "\"" -> matchString()
@@ -73,7 +70,7 @@ class JackTokenizer(private val code: String) {
     private fun matchInteger() {
         var lexeme = code[current].toString()
         consume()
-        while (!isEOF() && code[current].toString().isDigit()) {
+        while (hasMoreTokens() && code[current].toString().isDigit()) {
             lexeme += code[current]
             consume()
         }
@@ -84,11 +81,11 @@ class JackTokenizer(private val code: String) {
     private fun matchString() {
         consume() // skip over opening "
         var lexeme = ""
-        while (!isEOF() && code[current] != '"' && code[current] != '\n') {
+        while (hasMoreTokens() && code[current] != '"' && code[current] != '\n') {
             lexeme += code[current]
             consume()
         }
-        if (isEOF() || code[current] != '"') {
+        if (!hasMoreTokens() || code[current] != '"') {
             throwError("unterminated string")
         }
         consume() // skip over closing "
@@ -101,8 +98,11 @@ class JackTokenizer(private val code: String) {
         when (code[current + 1]) {
             '/' -> {
                 current += 2 // skip over '//'
-                while (!isEOF() && code[current] != '\n') {
+                while (hasMoreTokens() && code[current] != '\n') {
                     consume()
+                }
+                if (hasMoreTokens()) {
+                    advance()
                 }
             }
             '*' -> {
@@ -114,6 +114,9 @@ class JackTokenizer(private val code: String) {
                     throwError("unterminated multi-line comment")
                 }
                 current += 2 // skip over '*/'
+                if (hasMoreTokens()) {
+                    advance()
+                }
             }
             else -> matchSymbol(code[current].toString()) // Just a single '/' operator
         }
@@ -123,7 +126,7 @@ class JackTokenizer(private val code: String) {
     private fun matchIdentifier() {
         var lexeme = code[current].toString()
         consume()
-        while (!isEOF() && code[current].toString().isAlphanumeric()) {
+        while (hasMoreTokens() && code[current].toString().isAlphanumeric()) {
             lexeme += code[current]
             consume()
         }
@@ -137,7 +140,7 @@ class JackTokenizer(private val code: String) {
     }
 
     private fun consume() {
-        assert(!isEOF())
+        assert(hasMoreTokens())
         if (code[current] == '\n') {
             lineNumber++
             columnNumber = 1

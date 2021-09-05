@@ -1,9 +1,10 @@
-{} class
-game // end of line comment
+class Simple {
+    field Square square;
 
-/* multi
-line
-comment
-*/
-
-123 "my string"  // comment
+    constructor Square new(int Ax, int Ay) {
+        let x = Ax;
+        let y = Ay;
+        do draw();
+        return x;
+    }
+}
