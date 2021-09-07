@@ -1,12 +1,6 @@
 <class>
     <keyword>class</keyword>
-    <identifier>Simple</identifier>
+    <identifier>C</identifier>
     <symbol>{</symbol>
-    <classVarDec>
-        <keyword>field</keyword>
-        <identifier>Square</identifier>
-        <identifier>square</identifier>
-        <symbol>;</symbol>
-    </classVarDec>
     <symbol>}</symbol>
 </class>

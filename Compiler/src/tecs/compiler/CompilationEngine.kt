@@ -33,8 +33,8 @@ class CompilationEngine(private val t: JackTokenizer) {
     private fun matchesKeywords(vararg keywords: Keyword): Boolean =
         t.tokenType == KEYWORD && t.keyword in keywords
 
-    private fun matchesSymbol(symbol: String): Boolean =
-        t.tokenType == SYMBOL && t.symbol == symbol
+    private fun matchesSymbols(vararg symbols: String): Boolean =
+        t.tokenType == SYMBOL && t.symbol in symbols
 
     private fun matchesIdentifier(): Boolean =
         t.tokenType == IDENTIFIER
@@ -65,11 +65,11 @@ class CompilationEngine(private val t: JackTokenizer) {
         advance()
     }
 
-    private fun consumeSymbol(symbol: String) {
-        if (t.tokenType != SYMBOL || t.symbol != symbol) {
-            throw IllegalStateException("Expected symbol $symbol")
+    private fun consumeSymbol(symbol: String? = null) {
+        if (symbol != null) assert(matchesSymbols(symbol)) {
+            "Unmatched symbol $symbol"
         }
-        append("<symbol>$symbol</symbol>")
+        append("<symbol>${t.symbol}</symbol>")
         advance()
     }
 
@@ -97,7 +97,7 @@ class CompilationEngine(private val t: JackTokenizer) {
         consumeKeyword()
         consumeType()
         consumeIdentifier() // varName
-        while (matchesSymbol(",")) {
+        while (matchesSymbols(",")) {
             consumeSymbol(",")
             consumeIdentifier() // varName
         }
@@ -128,15 +128,19 @@ class CompilationEngine(private val t: JackTokenizer) {
 
     // ( type varName (',' type varName)* )?
     private fun compileParameterList() {
+        append("<parameterList>")
+        indent()
         if (matchesType()) {
             consumeType()
             consumeIdentifier() // varName
         }
-        while (matchesSymbol(",")) {
+        while (matchesSymbols(",")) {
             consumeSymbol(",")
             consumeType()
             consumeIdentifier() // varName
         }
+        dedent()
+        append("</parameterList>")
     }
 
     // '{' varDec* statements '}'
@@ -160,7 +164,7 @@ class CompilationEngine(private val t: JackTokenizer) {
         consumeKeyword(VAR)
         consumeType()
         consumeIdentifier() // varName
-        while (matchesSymbol(",")) {
+        while (matchesSymbols(",")) {
             consumeSymbol(",")
             consumeIdentifier() // varName
         }
@@ -196,7 +200,7 @@ class CompilationEngine(private val t: JackTokenizer) {
         indent()
         consumeKeyword(LET)
         consumeIdentifier() // varName
-        if (matchesSymbol("[")) {
+        if (matchesSymbols("[")) {
             consumeSymbol("[")
             compileExpression()
             consumeSymbol("]")
@@ -249,7 +253,18 @@ class CompilationEngine(private val t: JackTokenizer) {
         append("<doStatement>")
         indent()
         consumeKeyword(DO)
-        compileExpression()
+        consumeIdentifier()
+        if (matchesSymbols("(")) {
+            consumeSymbol("(")
+            compileExpressionList()
+            consumeSymbol(")")
+        } else {
+            consumeSymbol(".")
+            consumeIdentifier()
+            consumeSymbol("(")
+            compileExpressionList()
+            consumeSymbol(")")
+        }
         consumeSymbol(";")
         dedent()
         append("</doStatement>")
@@ -260,7 +275,7 @@ class CompilationEngine(private val t: JackTokenizer) {
         append("<returnStatement>")
         indent()
         consumeKeyword(RETURN)
-        if (!matchesSymbol(";")) {
+        if (!matchesSymbols(";")) {
             compileExpression()
         }
         consumeSymbol(";")
@@ -273,31 +288,52 @@ class CompilationEngine(private val t: JackTokenizer) {
         append("<expression>")
         indent()
         compileTerm()
-
-        // TODO (op term)*
-
+        while (matchesSymbols("+", "-", "*", "/", "&amp;", "|", "&lt;", "&gt;", "=")) {
+            consumeSymbol()
+            compileTerm()
+        }
         dedent()
         append("</expression>")
     }
 
     // integerConstant | stringConstant | keywordConstant | varName |
-    // TODO
+    // varName '[' expression ']' | '(' expression ')' | unaryOp term | subroutineCall
     private fun compileTerm() {
         append("<term>")
         indent()
-
         if (t.tokenType == INT_CONST) {
             consumeIntConst()
         } else if (t.tokenType == STRING_CONST) {
             consumeStringConst()
         } else if (matchesKeywords(TRUE, FALSE, NULL, THIS)) {
             consumeKeyword()
+        } else if (matchesSymbols("(")) {
+            consumeSymbol("(")
+            compileExpression()
+            consumeSymbol(")")
+        } else if (matchesSymbols("-", "~")) {
+            consumeSymbol()
+            compileTerm()
         } else if (matchesIdentifier()) {
             consumeIdentifier()
+            if (matchesSymbols("[")) {
+                consumeSymbol("[")
+                compileExpression()
+                consumeSymbol("]")
+            } else if (matchesSymbols("(")) {
+                consumeSymbol("(")
+                compileExpressionList()
+                consumeSymbol(")")
+            } else if (matchesSymbols(".")) {
+                consumeSymbol(".")
+                consumeIdentifier()
+                consumeSymbol("(")
+                compileExpressionList()
+                consumeSymbol(")")
+            }
         } else {
-            TODO()
+            throw IllegalStateException("Invalid term")
         }
-
         dedent()
         append("</term>")
     }
@@ -314,7 +350,25 @@ class CompilationEngine(private val t: JackTokenizer) {
         advance()
     }
 
+    // ( expression (',' expression)* )?
     private fun compileExpressionList(): Int {
-        return 0
+        append("<expressionList>")
+        indent()
+        var exprCount = 0
+        if (matchesSymbols(")")) {
+            dedent()
+            append("</expressionList>")
+            return exprCount
+        }
+        compileExpression()
+        exprCount++
+        while (matchesSymbols(",")) {
+            consumeSymbol(",")
+            compileExpression()
+            exprCount++
+        }
+        dedent()
+        append("</expressionList>")
+        return exprCount
     }
 }

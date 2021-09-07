@@ -1,6 +1,6 @@
 <tokens>
     <keyword>class</keyword>
-    <identifier>Simple</identifier>
+    <identifier>C</identifier>
     <symbol>{</symbol>
     <symbol>}</symbol>
 </tokens>
