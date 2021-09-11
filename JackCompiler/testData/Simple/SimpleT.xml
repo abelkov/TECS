@@ -1,0 +1,6 @@
+<tokens>
+    <keyword>class</keyword>
+    <identifier>C</identifier>
+    <symbol>{</symbol>
+    <symbol>}</symbol>
+</tokens>
