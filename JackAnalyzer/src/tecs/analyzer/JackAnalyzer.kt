@@ -1,4 +1,4 @@
-package tecs.compiler
+package tecs.analyzer
 
 class JackAnalyzer {
     // private val c = CodeWriter(generateInit)

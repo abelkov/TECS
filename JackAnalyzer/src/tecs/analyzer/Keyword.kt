@@ -1,4 +1,4 @@
-package tecs.compiler
+package tecs.analyzer
 
 enum class Keyword {
     CLASS, METHOD, FUNCTION, CONSTRUCTOR, INT, BOOLEAN, CHAR,

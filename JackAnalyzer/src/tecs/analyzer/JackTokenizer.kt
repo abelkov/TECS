@@ -1,6 +1,6 @@
-package tecs.compiler
+package tecs.analyzer
 
-import tecs.compiler.TokenType.*
+import tecs.analyzer.TokenType.*
 
 private val escapedSymbols = mapOf(
     "<" to "&lt;",

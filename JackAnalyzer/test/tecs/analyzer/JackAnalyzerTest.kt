@@ -1,8 +1,8 @@
-package tecs.compiler
+package tecs.analyzer
 
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import tecs.compiler.TokenType.*
+import tecs.analyzer.TokenType.*
 import java.io.File
 import java.nio.file.Files
 

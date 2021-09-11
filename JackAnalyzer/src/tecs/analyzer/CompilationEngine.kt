@@ -1,7 +1,7 @@
-package tecs.compiler
+package tecs.analyzer
 
-import tecs.compiler.Keyword.*
-import tecs.compiler.TokenType.*
+import tecs.analyzer.Keyword.*
+import tecs.analyzer.TokenType.*
 
 class CompilationEngine(private val t: JackTokenizer) {
     private val output = StringBuilder()
