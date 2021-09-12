@@ -10,7 +10,7 @@ class JackCompilerTest {
     @Test
     fun testParser() {
         File("testData").listFiles { it, _ -> it.isDirectory }!!.forEach { testDir: File ->
-            // if (testDir.name != "ArrayTest") return@forEach
+            if (testDir.name != "Simple") return@forEach
 
             val testPath = testDir.toPath()
 
