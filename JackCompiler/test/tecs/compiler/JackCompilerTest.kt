@@ -10,7 +10,7 @@ class JackCompilerTest {
     @Test
     fun testParser() {
         File("testData").listFiles { it, _ -> it.isDirectory }!!.forEach { testDir: File ->
-            if (testDir.name != "Simple") return@forEach
+            if (testDir.name != "Seven") return@forEach
 
             val testPath = testDir.toPath()
 
@@ -21,11 +21,14 @@ class JackCompilerTest {
                 val baseName = jackFile.name.removeSuffix(".jack")
                 val qualifiedName = "${testDir.name}/$baseName"
 
-                val parserPath = testPath.resolve("$baseName.xml")
-                val parserExpected = Files.readString(parserPath)
+                val outPath = testPath.resolve("$baseName.vm")
+
+                // val parserPath = testPath.resolve("$baseName.xml")
+                // val parserExpected = Files.readString(parserPath)
 
                 val engine = CompilationEngine(JackTokenizer(code))
-                assertEquals(parserExpected, engine.compile(), "parser for '$qualifiedName' failed")
+                Files.writeString(outPath, engine.compile())
+
             }
         }
     }
