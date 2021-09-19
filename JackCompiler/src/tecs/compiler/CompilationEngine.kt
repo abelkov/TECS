@@ -3,10 +3,25 @@ package tecs.compiler
 import tecs.compiler.Keyword.*
 import tecs.compiler.TokenType.*
 
-class CompilationEngine(private val t: JackTokenizer) {
-    private val output = StringBuilder()
-    private var offset = 0
+private val operatorMap = mapOf(
+    "+" to "add",
+    "-" to "sub",
+    "*" to "call Math.multiply 2",
+    "/" to "call Math.divide 2",
+    "&" to "and",
+    "|" to "or",
+    "<" to "lt",
+    ">" to "gt",
+    "=" to "eq"
+)
 
+class CompilationEngine(private val t: JackTokenizer) {
+    private lateinit var className: String
+    private var subroutineName: String = ""
+    private var subroutineKind: Keyword = NULL
+    private val output = StringBuilder()
+    private var whileCount: Int = 0
+    private var ifCount: Int = 0
     private val classTable = SymbolTable()
     private val subroutineTable = SymbolTable()
 
@@ -17,11 +32,8 @@ class CompilationEngine(private val t: JackTokenizer) {
     }
 
     private fun compileClass() {
-        append("<class>")
-        indent()
         consumeKeyword(CLASS)
-        val className = consumeIdentifier()
-        appendIdentifier(className, category = "class")
+        className = consumeIdentifier()
         consumeSymbol("{")
         while (matchesKeywords(STATIC, FIELD)) {
             compileClassVarDec()
@@ -30,12 +42,6 @@ class CompilationEngine(private val t: JackTokenizer) {
             compileSubroutineDec()
         }
         consumeSymbol("}")
-        dedent()
-        append("</class>")
-    }
-
-    private fun appendIdentifier(name: String, category: String, index: Int? = null, usage: String = "declared") {
-        append("""<identifier name="$name" category="$category" index="$index" usage="$usage" />""")
     }
 
     private fun matchesKeywords(vararg keywords: Keyword): Boolean =
@@ -48,21 +54,12 @@ class CompilationEngine(private val t: JackTokenizer) {
         t.tokenType == IDENTIFIER
 
     private fun append(s: String) {
-        output.appendLine(" ".repeat(offset) + s)
-    }
-
-    private fun indent() {
-        offset += 4
-    }
-
-    private fun dedent() {
-        offset -= 4
+        output.appendLine(s)
     }
 
     private fun consumeKeyword(keyword: Keyword? = null): Keyword {
         if (keyword != null) assert(matchesKeywords(keyword))
         val result = t.keyword!!
-        append("<keyword>${result.name.lowercase()}</keyword>")
         advance()
         return result
     }
@@ -72,17 +69,17 @@ class CompilationEngine(private val t: JackTokenizer) {
             throw IllegalStateException("Expected identifier")
         }
         val identifier = t.identifier
-        append("<identifier>$identifier</identifier>")
         advance()
         return identifier
     }
 
-    private fun consumeSymbol(symbol: String? = null) {
+    private fun consumeSymbol(symbol: String? = null): String {
         if (symbol != null) assert(matchesSymbols(symbol)) {
             "Unmatched symbol $symbol"
         }
-        append("<symbol>${t.symbol}</symbol>")
+        val result = t.symbol
         advance()
+        return result
     }
 
     private fun matchesType(): Boolean {
@@ -104,105 +101,95 @@ class CompilationEngine(private val t: JackTokenizer) {
 
     // ('static' | 'field') type varName (',' varName)* ;
     private fun compileClassVarDec() {
-        append("<classVarDec>")
-        indent()
         val keyword = consumeKeyword()
         val type = consumeType()
         val firstName = consumeIdentifier()
         classTable.define(firstName, type, VariableKind.valueOf(keyword.name))
-        appendIdentifier(firstName, category = keyword.name.lowercase(), index = classTable.indexOf(firstName))
         while (matchesSymbols(",")) {
             consumeSymbol(",")
             val nextName = consumeIdentifier()
             classTable.define(nextName, type, VariableKind.valueOf(keyword.name))
-            appendIdentifier(nextName, category = keyword.name.lowercase(), index = classTable.indexOf(nextName))
         }
         consumeSymbol(";")
-        dedent()
-        append("</classVarDec>")
     }
 
     // ('constructor' | 'function' | 'method') ('void' | type) subroutineName
     // '(' parameterList ')' subroutineBody
     private fun compileSubroutineDec() {
         subroutineTable.reset()
-        append("<subroutineDec>")
-        indent()
-        consumeKeyword()
+        whileCount = 0
+        ifCount = 0
+        subroutineKind = consumeKeyword()
+        if (subroutineKind == METHOD) {
+            subroutineTable.define("this", className, VariableKind.ARG)
+        }
         if (matchesKeywords(VOID)) {
             consumeKeyword()
         } else {
             consumeType()
         }
-        val name = consumeIdentifier()
-        appendIdentifier(name, category = "subroutine")
+        subroutineName = consumeIdentifier()
         consumeSymbol("(")
         compileParameterList()
         consumeSymbol(")")
         compileSubroutineBody()
-        dedent()
-        append("</subroutineDec>")
     }
 
     // ( type varName (',' type varName)* )?
     private fun compileParameterList() {
-        append("<parameterList>")
-        indent()
         if (matchesType()) {
             val firstType = consumeType()
             val firstName = consumeIdentifier()
             subroutineTable.define(firstName, firstType, VariableKind.ARG)
-            appendIdentifier(firstName, category = "arg", index = subroutineTable.indexOf(firstName))
         }
         while (matchesSymbols(",")) {
             consumeSymbol(",")
             val nextType = consumeType()
             val nextName = consumeIdentifier()
             subroutineTable.define(nextName, nextType, VariableKind.ARG)
-            appendIdentifier(nextName, category = "arg", index = subroutineTable.indexOf(nextName))
         }
-        dedent()
-        append("</parameterList>")
     }
 
     // '{' varDec* statements '}'
     private fun compileSubroutineBody() {
-        append("<subroutineBody>")
-        indent()
         consumeSymbol("{")
         while (matchesKeywords(VAR)) {
             compileVarDec()
         }
+        append("function $className.$subroutineName ${subroutineTable.varCount(VariableKind.VAR)}")
+        when (subroutineKind) {
+            METHOD -> {
+                append("push argument 0")
+                append("pop pointer 0")
+            }
+            CONSTRUCTOR -> {
+                append("push constant ${classTable.varCount(VariableKind.FIELD)}")
+                append("call Memory.alloc 1")
+                append("pop pointer 0")
+            }
+            else -> {
+            }
+        }
         compileStatements()
         consumeSymbol("}")
-        dedent()
-        append("</subroutineBody>")
     }
 
     // 'var' type varName (',' varName)* ;
     private fun compileVarDec() {
-        append("<varDec>")
-        indent()
         consumeKeyword(VAR)
         val type = consumeType()
         val firstName = consumeIdentifier()
         subroutineTable.define(firstName, type, VariableKind.VAR)
-        appendIdentifier(firstName, category = "var", index = subroutineTable.indexOf(firstName))
         while (matchesSymbols(",")) {
             consumeSymbol(",")
             val nextName = consumeIdentifier()
             subroutineTable.define(nextName, type, VariableKind.VAR)
-            appendIdentifier(nextName, category = "var", index = subroutineTable.indexOf(nextName))
         }
         consumeSymbol(";")
-        dedent()
-        append("</varDec>")
     }
 
     // statement*
     private fun compileStatements() {
-        append("<statements>")
-        indent()
         while (matchesKeywords(LET, IF, WHILE, DO, RETURN)) {
             if (matchesKeywords(LET)) {
                 compileLet()
@@ -216,184 +203,215 @@ class CompilationEngine(private val t: JackTokenizer) {
                 compileReturn()
             }
         }
-        dedent()
-        append("</statements>")
     }
 
     // 'let' varName ( '[' expression ']' )? '=' expression ';'
     private fun compileLet() {
-        append("<letStatement>")
-        indent()
         consumeKeyword(LET)
         val name = consumeIdentifier()
         val map = if (subroutineTable.contains(name)) subroutineTable else classTable
-        val category = map.kindOf(name).name.lowercase()
-        val index = map.indexOf(name)
-        appendIdentifier(name, category, index, usage = "used")
         if (matchesSymbols("[")) {
             consumeSymbol("[")
             compileExpression()
+            append("push ${map.kindOf(name).toSegmentName()} ${map.indexOf(name)}")
+            append("add")
             consumeSymbol("]")
+            consumeSymbol("=")
+            compileExpression()
+            append("pop temp 0")
+            append("pop pointer 1")
+            append("push temp 0")
+            append("pop that 0")
+            consumeSymbol(";")
+        } else {
+            consumeSymbol("=")
+            compileExpression()
+            consumeSymbol(";")
+            append("pop ${map.kindOf(name).toSegmentName()} ${map.indexOf(name)}")
         }
-        consumeSymbol("=")
-        compileExpression()
-        consumeSymbol(";")
-        dedent()
-        append("</letStatement>")
     }
 
     // 'if' '(' expression ')' '{' statements '}' ( 'else' '{' statements '}' )?
     private fun compileIf() {
-        append("<ifStatement>")
-        indent()
+        val count = ifCount
+        ifCount++
         consumeKeyword(IF)
         consumeSymbol("(")
         compileExpression()
+        append("if-goto IF_TRUE$count")
+        append("goto IF_FALSE$count")
+        append("label IF_TRUE$count")
         consumeSymbol(")")
         consumeSymbol("{")
         compileStatements()
         consumeSymbol("}")
         if (matchesKeywords(ELSE)) {
+            append("goto IF_END$count")
+            append("label IF_FALSE$count")
             consumeKeyword(ELSE)
             consumeSymbol("{")
             compileStatements()
             consumeSymbol("}")
+            append("label IF_END$count")
+        } else {
+            append("label IF_FALSE$count")
         }
-        dedent()
-        append("</ifStatement>")
     }
 
     // 'while' '(' expression ')' '{' statements '}'
     private fun compileWhile() {
-        append("<whileStatement>")
-        indent()
+        val count = whileCount
+        whileCount++
         consumeKeyword(WHILE)
         consumeSymbol("(")
+        append("label WHILE_EXP$count")
         compileExpression()
+        append("not")
+        append("if-goto WHILE_END$count")
         consumeSymbol(")")
         consumeSymbol("{")
         compileStatements()
+        append("goto WHILE_EXP$count")
+        append("label WHILE_END$count")
         consumeSymbol("}")
-        dedent()
-        append("</whileStatement>")
     }
 
     // 'do' subroutineCall ';'
     private fun compileDo() {
-        append("<doStatement>")
-        indent()
         consumeKeyword(DO)
-        val firstName = consumeIdentifier()
-        if (matchesSymbols("(")) {
-            appendIdentifier(firstName, category = "subroutine", usage = "used")
-        } else {
-            appendIdentifier(firstName, category = "class", usage = "used")
-            consumeSymbol(".")
-            val nextName = consumeIdentifier()
-            appendIdentifier(nextName, category = "subroutine", usage = "used")
-        }
-        consumeSymbol("(")
-        compileExpressionList()
-        consumeSymbol(")")
+        compileExpression()
+        append("pop temp 0")
         consumeSymbol(";")
-        dedent()
-        append("</doStatement>")
     }
 
     // 'return' expression? ';'
     private fun compileReturn() {
-        append("<returnStatement>")
-        indent()
         consumeKeyword(RETURN)
-        if (!matchesSymbols(";")) {
+        if (matchesSymbols(";")) {
+            append("push constant 0")
+        } else {
             compileExpression()
         }
+        append("return")
         consumeSymbol(";")
-        dedent()
-        append("</returnStatement>")
     }
 
     // term (op term)*
     private fun compileExpression() {
-        append("<expression>")
-        indent()
         compileTerm()
-        while (matchesSymbols("+", "-", "*", "/", "&amp;", "|", "&lt;", "&gt;", "=")) {
-            consumeSymbol()
+        while (matchesSymbols("+", "-", "*", "/", "&", "|", "<", ">", "=")) {
+            val symbol = consumeSymbol()
             compileTerm()
+            append(operatorMap[symbol]!!)
         }
-        dedent()
-        append("</expression>")
     }
 
     // integerConstant | stringConstant | keywordConstant | varName |
     // varName '[' expression ']' | '(' expression ')' | unaryOp term | subroutineCall
     private fun compileTerm() {
-        append("<term>")
-        indent()
-        if (t.tokenType == INT_CONST) {
-            consumeIntConst()
-        } else if (t.tokenType == STRING_CONST) {
-            consumeStringConst()
-        } else if (matchesKeywords(TRUE, FALSE, NULL, THIS)) {
-            consumeKeyword()
-        } else if (matchesSymbols("(")) {
+        if (matchesSymbols("(")) {
             consumeSymbol("(")
             compileExpression()
             consumeSymbol(")")
-        } else if (matchesSymbols("-", "~")) {
+        } else if (matchesSymbols("-")) {
             consumeSymbol()
             compileTerm()
+            append("neg")
+        } else if (matchesSymbols("~")) {
+            consumeSymbol()
+            compileTerm()
+            append("not")
+        } else if (t.tokenType == INT_CONST) {
+            consumeIntConst()
+        } else if (t.tokenType == STRING_CONST) {
+            consumeStringConst()
+        } else if (matchesKeywords(NULL, FALSE)) {
+            consumeKeyword()
+            append("push constant 0")
+        } else if (matchesKeywords(TRUE)) {
+            consumeKeyword()
+            append("push constant 0")
+            append("not")
+        } else if (matchesKeywords(THIS)) {
+            consumeKeyword()
+            append("push pointer 0")
+            if (matchesSymbols(".")) {
+                // this.methodName(...)
+                consumeSymbol(".")
+                val methodName = consumeIdentifier()
+                consumeSymbol("(")
+                val argCount = compileExpressionList()
+                consumeSymbol(")")
+                append("call $className.$methodName ${argCount + 1}")
+            }
         } else if (matchesIdentifier()) {
             val name = consumeIdentifier()
+            val map = when {
+                subroutineTable.contains(name) -> subroutineTable
+                classTable.contains(name) -> classTable
+                else -> null
+            }
             if (matchesSymbols("[")) {
-                appendIdentifier(name, category = "subroutine", usage = "used")
+                // array access
                 consumeSymbol("[")
                 compileExpression()
+                append("push ${map!!.kindOf(name).toSegmentName()} ${map.indexOf(name)}")
+                append("add")
+                append("pop pointer 1")
+                append("push that 0")
                 consumeSymbol("]")
             } else if (matchesSymbols("(")) {
-                appendIdentifier(name, category = "subroutine", usage = "used")
+                // method call on implicit 'this': methodName(...)
+                append("push pointer 0")
                 consumeSymbol("(")
-                compileExpressionList()
+                val argCount = compileExpressionList()
                 consumeSymbol(")")
+                append("call $className.$name ${argCount + 1}")
             } else if (matchesSymbols(".")) {
-                appendIdentifier(name, category = "class", usage = "used")
+                var argCount = 0
+                if (map != null) {
+                    // it's a method call: varName.methodName(...)
+                    append("push ${map.kindOf(name).toSegmentName()} ${map.indexOf(name)}")
+                    argCount++
+                }
                 consumeSymbol(".")
                 val nextName = consumeIdentifier()
-                appendIdentifier(nextName, category = "subroutine", usage = "used")
                 consumeSymbol("(")
-                compileExpressionList()
+                argCount += compileExpressionList()
                 consumeSymbol(")")
+                val className = map?.typeOf(name) ?: name
+                append("call $className.$nextName $argCount")
             } else {
-                appendIdentifier(name, category = "subroutine", usage = "used")
+                if (map == null) throw IllegalStateException("Undefined variable '$name'")
+                append("push ${map.kindOf(name).toSegmentName()} ${map.indexOf(name)}")
             }
         } else {
             throw IllegalStateException("Invalid term")
         }
-        dedent()
-        append("</term>")
     }
 
     private fun consumeIntConst() {
         assert(t.tokenType == INT_CONST)
-        append("<integerConstant>${t.intVal}</integerConstant>")
+        append("push constant ${t.intVal}")
         advance()
     }
 
     private fun consumeStringConst() {
         assert(t.tokenType == STRING_CONST)
-        append("<stringConstant>${t.stringVal}</stringConstant>")
+        val str = t.stringVal
         advance()
+        append("push constant ${str.length}")
+        append("call String.new 1")
+        for (char in str) {
+            append("push constant ${char.code}")
+            append("call String.appendChar 2")
+        }
     }
 
     // ( expression (',' expression)* )?
     private fun compileExpressionList(): Int {
-        append("<expressionList>")
-        indent()
         var exprCount = 0
         if (matchesSymbols(")")) {
-            dedent()
-            append("</expressionList>")
             return exprCount
         }
         compileExpression()
@@ -403,8 +421,6 @@ class CompilationEngine(private val t: JackTokenizer) {
             compileExpression()
             exprCount++
         }
-        dedent()
-        append("</expressionList>")
         return exprCount
     }
 }

@@ -2,13 +2,6 @@ package tecs.compiler
 
 import tecs.compiler.TokenType.*
 
-private val escapedSymbols = mapOf(
-    "<" to "&lt;",
-    "&" to "&amp;",
-    ">" to "&gt;",
-    "\"" to "&quot;"
-)
-
 class JackTokenizer(private val code: String) {
     private var current = 0
     private var lineNumber = 1
@@ -66,7 +59,7 @@ class JackTokenizer(private val code: String) {
 
     private fun matchSymbol(c: String) {
         tokenType = SYMBOL
-        symbol = if (c in escapedSymbols) escapedSymbols[c]!! else c
+        symbol = c
         consume()
     }
 

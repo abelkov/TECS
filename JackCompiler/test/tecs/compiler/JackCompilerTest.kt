@@ -8,10 +8,9 @@ import java.nio.file.Files
 class JackCompilerTest {
 
     @Test
-    fun testParser() {
+    fun testCompiler() {
         File("testData").listFiles { it, _ -> it.isDirectory }!!.forEach { testDir: File ->
-            if (testDir.name != "Seven") return@forEach
-
+            // if (testDir.name != "ComplexArrays") return@forEach
             val testPath = testDir.toPath()
 
             testDir.listFiles { _, name -> name.endsWith(".jack") }!!.forEach loop@{ jackFile ->
@@ -20,15 +19,9 @@ class JackCompilerTest {
                 val code = Files.readString(jackFile.toPath())
                 val baseName = jackFile.name.removeSuffix(".jack")
                 val qualifiedName = "${testDir.name}/$baseName"
-
-                val outPath = testPath.resolve("$baseName.vm")
-
-                // val parserPath = testPath.resolve("$baseName.xml")
-                // val parserExpected = Files.readString(parserPath)
-
+                val cmpPath = testPath.resolve("$baseName.cmp")
                 val engine = CompilationEngine(JackTokenizer(code))
-                Files.writeString(outPath, engine.compile())
-
+                assertEquals(Files.readString(cmpPath), engine.compile(), "Compile '$qualifiedName' failed")
             }
         }
     }
